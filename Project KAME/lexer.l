@@ -1,86 +1,119 @@
 %{
-  #include <stdio.h>  
+  #include <stdio.h>
+  #include <string.h>
+  #include "y.tab.h"
+  
+  extern int yyerror (char *msg);  
 %}
+%option yylineno
 
 %%
 
-[ \t\n]                       ;
-[0-9]+                        {printf("NUMBER(%s)\n",yytext);}
-([0-9]+\.[0-9]*)|(\.[0-9]+)    {printf("REAL(%s)\n",yytext);}
+[ \t\n]                       	;
+[0-9]+							{yylval.iValue = atoi(yytext);
+									return NUMBER;}
+([0-9]+\.[0-9]*)|(\.[0-9]+)		{yylval.fValue = atof(yytext);
+									return REAL;}
 
-"int"									{printf("TYPE(%s)\n",yytext);}
-"float"								{printf("TYPE(%s)\n",yytext);}
-"boolean"							{printf("TYPE(%s)\n",yytext);}
-"char"								{printf("TYPE(%s)\n",yytext);}
-"string"						  {printf("TYPE(%s)\n",yytext);}
-"void"						    {printf("TYPE(%s)\n",yytext);}
-"enum"								{printf("TYPE(%s)\n",yytext);}
-"struct"						  {printf("TYPE(%s)\n",yytext);}
+"int"					{yylval.sValue = strdup(yytext);
+							return TYPE;}
+"float"					{yylval.sValue = strdup(yytext);
+							return TYPE;}
+"boolean"				{yylval.sValue = strdup(yytext);
+							return TYPE;}
+"char"					{yylval.sValue = strdup(yytext);
+							return TYPE;}
+"string"				{yylval.sValue = strdup(yytext);
+							return TYPE;}
+"void"					{yylval.sValue = strdup(yytext);
+							return TYPE;}
+"enum"					{yylval.sValue = strdup(yytext);
+							return TYPE;}
+"struct"				{yylval.sValue = strdup(yytext);
+						return TYPE;}
 
-"var"                 {printf("VAR\n");}
-"break" 							{printf("BREAK\n");}
-"return" 							{printf("RETURN\n");}
-"continue" 						{printf("CONTINUE\n");}
-"input" 							{printf("input\n");}
-"OUTPUT" 							{printf("OUTPUT\n");}
-"function"						{printf("FUNCTION\n");}
-"while"              	{printf("WHILE\n");}
-"for" 						    {printf("FOR\n");}
-"typedef" 					  {printf("TYPEDEF\n");}
-"true" 					      {printf("TRUE\n");}
-"false" 					    {printf("FALSE\n");}
+"var"					{return(VAR);}
+"break"					{return(BREAK);}
+"return"				{return(RETURN);}
+"continue"				{return(CONTINUE);}
+"input"					{return(INPUT);}
+"OUTPUT"				{return(OUTPUT);}
+"function"				{return(FUNCTION);}
+"while"					{return(WHILE);}
+"for"					{return(FOR);}
+"typedef"				{return(TYPEDEF);}
+"true"					{return(TRUE);}
+"false"					{return(FALSE);}
 
-"{"              			{printf("BEGIN\n");}
-"}"                 	{printf("END\n");}
-"if"                  {printf("IF\n");}
-"else"                {printf("ELSE\n");}
-":"                   {printf("COLON\n");}
-";"                   {printf("SEMICOLON\n");}
-","                   {printf("COMMA\n");}
-"."                   {printf("DOT\n");}
-"="                   {printf("ASSIGNMENT\n");}
-"["              			{printf("AC\n");}
-"]"                 	{printf("FC\n");}
-"("              			{printf("AP\n");}
-")"                 	{printf("FP\n");}
+"{"              		{return(BEGIN_BLOCK);}
+"}"						{return(END_BLOCK);}
+"if"					{return(IF);}
+"else"                	{return(ELSE);}
+":"                   	{return(yytext[0]);}
+";"                   	{return(yytext[0]);}
+","                   	{return(yytext[0]);}
+"."                   	{return(yytext[0]);}
+"="                   	{return(ASSIGN);}
+"["						{return(yytext[0]);}
+"]"                 	{return(yytext[0]);}
+"("						{return(yytext[0]);}
+")"                 	{return(yytext[0]);}
 
-"or" 					        {printf("OP(%s)\n",yytext);}
-"and" 					      {printf("OP(%s)\n",yytext);}
-"not" 					      {printf("OP(%s)\n",yytext);}
-"++" 					        {printf("OP(%s)\n",yytext);}
-"--" 					        {printf("OP(%s)\n",yytext);}
-"+=" 					        {printf("OP(%s)\n",yytext);}
-"-=" 					        {printf("OP(%s)\n",yytext);}
-"*=" 					        {printf("OP(%s)\n",yytext);}
-"/=" 					        {printf("OP(%s)\n",yytext);}
-"+" 					        {printf("OP(%s)\n",yytext);}
-"-" 					        {printf("OP(%s)\n",yytext);}
-"*" 					        {printf("OP(%s)\n",yytext);}
-"/" 					        {printf("OP(%s)\n",yytext);}
-"%" 					        {printf("OP(%s)\n",yytext);}
+"or"						{yylval.sValue = strdup(yytext);
+								return BOOL_OP;}
+"and" 					   	{yylval.sValue = strdup(yytext);
+								return BOOL_OP;}
+"not" 						{yylval.sValue = strdup(yytext);
+								return BOOL_OP;}
+"++" 					   	{yylval.sValue = strdup(yytext);
+								return OPC;}
+"--" 					    {yylval.sValue = strdup(yytext);
+								return OPC;}
+"+=" 					   	{yylval.sValue = strdup(yytext);
+								return OPA;}
+"-="						{yylval.sValue = strdup(yytext);
+								return OPA;}
+"*=" 					 	{yylval.sValue = strdup(yytext);
+								return OPA;}
+"/=" 					  	{yylval.sValue = strdup(yytext);
+								return OPA;}
+"+" 					 	{yylval.sValue = strdup(yytext);
+								return WEAK_OP;}
+"-" 					   	{yylval.sValue = strdup(yytext);
+								return WEAK_OP;}
+"*" 					  	{yylval.sValue = strdup(yytext);
+								return STRONG_OP;}
+"/" 					  	{yylval.sValue = strdup(yytext);
+								return STRONG_OP;}
+"%" 					  	{yylval.sValue = strdup(yytext);
+								return STRONG_OP;}
 
-"<" 					        {printf("RELATION(%s)\n",yytext);}
-"<=" 					        {printf("RELATION(%s)\n",yytext);}
-">=" 					        {printf("RELATION(%s)\n",yytext);}
-">" 					        {printf("RELATION(%s)\n",yytext);}
-"==" 					        {printf("RELATION(%s)\n",yytext);}
-"!=" 					        {printf("RELATION(%s)\n",yytext);}
+"<" 					  	{yylval.sValue = strdup(yytext);
+								return RELATION;}
+"<=" 					  	{yylval.sValue = strdup(yytext);
+								return RELATION;}
+">=" 					   	{yylval.sValue = strdup(yytext);
+								return RELATION;}
+">" 					  	{yylval.sValue = strdup(yytext);
+								return RELATION;}
+"==" 					   	{yylval.sValue = strdup(yytext);
+								return RELATION;}
+"!=" 					   	{yylval.sValue = strdup(yytext);
+								return RELATION;}
 
-(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*) {printf("Comment: %s.\n", yytext);}
+(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)		{yylval.sValue = strdup(yytext);
+																return COMMENT;}
 
-(\"[a-zA-Z0-9]*\")	  {printf("LITERAL(%s)\n",yytext);}
-(\'[a-zA-Z0-9]*\')	  {printf("LITERAL(%s)\n",yytext);}
-[a-zA-Z][a-zA-Z0-9]*	{printf("ID(%s)\n",yytext);}
-.                     {printf("Invalid character.\n");}
+(\"[a-zA-Z0-9]*\")	  		{yylval.sValue = strdup(yytext);
+								return STR_LITERAL;}
+(\'[a-zA-Z0-9]*\')	  		{yylval.sValue = strdup(yytext);
+								return STR_LITERAL;}
+[a-zA-Z][a-zA-Z0-9]*		{yylval.sValue = strdup(yytext); 
+                      			return ID;}
+.                     		{yyerror("invalid character");}
 
 %%
 
 #ifndef yywrap
    int yywrap (void) {return 1;}
 #endif
-
-int main(void)
-{
-  yylex();  
-  return 0;
-}
