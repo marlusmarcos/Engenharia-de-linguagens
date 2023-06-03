@@ -37,13 +37,15 @@
 "return"				{return(RETURN);}
 "continue"				{return(CONTINUE);}
 "input"					{return(INPUT);}
-"OUTPUT"				{return(OUTPUT);}
+"output"				{return(OUTPUT);}
 "function"				{return(FUNCTION);}
+"procedure"				{return(PROC);}
 "while"					{return(WHILE);}
 "for"					{return(FOR);}
 "typedef"				{return(TYPEDEF);}
 "true"					{return(TRUE);}
 "false"					{return(FALSE);}
+"main"					{return(MAIN_BLOCK);}
 
 "{"              		{return(BEGIN_BLOCK);}
 "}"						{return(END_BLOCK);}
