@@ -27,10 +27,8 @@
 							return TYPE;}
 "void"					{yylval.sValue = strdup(yytext);
 							return TYPE;}
-"enum"					{yylval.sValue = strdup(yytext);
-							return TYPE;}
-"struct"				{yylval.sValue = strdup(yytext);
-						return TYPE;}
+"enum"					{return(ENUM);}
+"struct"				{return(STRUCT);}
 
 "var"					{return(VAR);}
 "break"					{return(BREAK);}
@@ -65,8 +63,7 @@
 								return BOOL_OP;}
 "and" 					   	{yylval.sValue = strdup(yytext);
 								return BOOL_OP;}
-"not" 						{yylval.sValue = strdup(yytext);
-								return BOOL_OP;}
+"not" 						{return(NOT);}
 "++" 					   	{yylval.sValue = strdup(yytext);
 								return OPC;}
 "--" 					    {yylval.sValue = strdup(yytext);
