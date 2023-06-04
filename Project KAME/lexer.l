@@ -100,8 +100,7 @@
 "!=" 					   	{yylval.sValue = strdup(yytext);
 								return RELATION;}
 
-(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)		{yylval.sValue = strdup(yytext);
-																return COMMENT;}
+(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)		;
 
 (\"[a-zA-Z0-9]*\")	  		{yylval.sValue = strdup(yytext);
 								return STR_LITERAL;}

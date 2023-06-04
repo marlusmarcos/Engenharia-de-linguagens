@@ -1,4 +1,4 @@
-function partition(int arr[], int low, int high) :int {
+function partition(arr[]: int, low: int, high: int) :int {
 	var i, j, pivot :int;
 	pivot = arr[high];
 	i = low - 1;
@@ -10,21 +10,21 @@ function partition(int arr[], int low, int high) :int {
 		t = arr[i];
 		arr[i] = arr[j];
 		arr[j] = t;
-		}
-	}
+		};
+	};
 
 	var t :int;
 	t = arr[i + 1];
 	arr[i+1] = arr[high];
 	arr[high] = arr[t];
 	return (i + 1);
-	}
+};
 
-function quickSort(int arr[], int low, int high) :void{
+function quickSort(arr[]: int, low :int, high :int) :void{
 	if (low < high) {
 		var pi :int;
 		pi = partition(arr, low, high); /* ** O pivot é escolhido ** */
 		quickSort(arr, low, pi - 1);
 		quickSort(arr, pi + 1, high);
-	}
-}
+	};
+};

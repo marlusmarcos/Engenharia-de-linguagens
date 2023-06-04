@@ -53,8 +53,8 @@ subprogram : function								{}
 
 function : FUNCTION ID '(' paramsdef ')' ':' TYPE BEGIN_BLOCK commands END_BLOCK	{};
 proc : PROC ID '(' paramsdef ')' BEGIN_BLOCK commands END_BLOCK						{};
-paramsdef : ID ':' TYPE																{}
-			| ID ':' TYPE ',' paramsdef												{}
+paramsdef : var ':' TYPE															{}
+			| var ':' TYPE ',' paramsdef											{}
 			| ;
 params : exp							{}
 		| exp ',' params				{}
