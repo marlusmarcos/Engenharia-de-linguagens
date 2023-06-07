@@ -37,7 +37,8 @@ declaration_seq : declaration ';' declaration_seq		{}
 				| ;
 
 declaration : VAR id_list ':' TYPE					{}
-			| user_def								{};
+			| user_def								{}
+			| type_def								{};
 id_list : ID										{}
 		| ID array_dim								{}
 		| ID ',' id_list							{}
@@ -79,7 +80,12 @@ command : declaration				{}
 
 
 user_def : STRUCT ID BEGIN_BLOCK declaration_seq END_BLOCK		{}
-		| ENUM ID BEGIN_BLOCK id_list END_BLOCK					{};
+		| ENUM ID BEGIN_BLOCK enum_init END_BLOCK				{};
+enum_init :	ID													{}
+			| ID ',' enum_init									{}
+			| ID id_list ASSIGN NUMBER							{}
+			| ID id_list ASSIGN NUMBER ',' enum_init			{};
+type_def : TYPEDEF ID ASSIGN user_def							{};
 
 assign : OPC ID												{}
 		| ID OPC											{}
