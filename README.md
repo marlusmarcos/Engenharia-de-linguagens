@@ -33,3 +33,9 @@ Projeto da disciplina de engenharia de linguagens do curso de Engenharia de Soft
 * Elexandro Torres Alves
 * Kaio Henrique de Sousa
 * Marlus Marcos Rodrigues Costa da Silva
+
+# Versão Bison
+
+bison (GNU Bison) 3.8.2
+Escrito por Robert Corbett e Richard Stallman.
+
