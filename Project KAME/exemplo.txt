@@ -1,3 +1,5 @@
+var arrTest[3]: int;
+
 function partition(arr[]: int, low: int, high: int) :int {
 	var i, j, pivot :int;
 	pivot = arr[high];
@@ -27,4 +29,12 @@ function quickSort(arr[]: int, low :int, high :int) :void{
 		quickSort(arr, low, pi - 1);
 		quickSort(arr, pi + 1, high);
 	};
+};
+
+main(){
+	for(var i: int = 0; i < length(arrTest); i++){
+		arrTest[i] = i;
+	};
+
+	quickSort(arrTest, 0, 2);
 };

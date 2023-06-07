@@ -44,6 +44,7 @@
 "true"					{return(TRUE);}
 "false"					{return(FALSE);}
 "main"					{return(MAIN_BLOCK);}
+"length"				{return(LENGTH);}
 
 "{"              		{return(BEGIN_BLOCK);}
 "}"						{return(END_BLOCK);}
@@ -60,9 +61,9 @@
 ")"                 	{return(yytext[0]);}
 
 "or"						{yylval.sValue = strdup(yytext);
-								return BOOL_OP;}
+								return WEAK_OP;}
 "and" 					   	{yylval.sValue = strdup(yytext);
-								return BOOL_OP;}
+								return WEAK_OP;}
 "not" 						{return(NOT);}
 "++" 					   	{yylval.sValue = strdup(yytext);
 								return OPC;}
@@ -88,17 +89,17 @@
 								return STRONG_OP;}
 
 "<" 					  	{yylval.sValue = strdup(yytext);
-								return RELATION;}
+								return WEAK_OP;}
 "<=" 					  	{yylval.sValue = strdup(yytext);
-								return RELATION;}
+								return WEAK_OP;}
 ">=" 					   	{yylval.sValue = strdup(yytext);
-								return RELATION;}
+								return WEAK_OP;}
 ">" 					  	{yylval.sValue = strdup(yytext);
-								return RELATION;}
+								return WEAK_OP;}
 "==" 					   	{yylval.sValue = strdup(yytext);
-								return RELATION;}
+								return WEAK_OP;}
 "!=" 					   	{yylval.sValue = strdup(yytext);
-								return RELATION;}
+								return WEAK_OP;}
 
 (\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)		;
 

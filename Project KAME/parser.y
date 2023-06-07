@@ -20,14 +20,12 @@ extern char * yytext;
 %token <iValue> NUMBER
 %token <fValue> REAL
 %token <sValue> STR_LITERAL
-%token <sValue> BOOL_OP
 %token <sValue> OPA
 %token <sValue> OPC
 %token <sValue> WEAK_OP
 %token <sValue> STRONG_OP
-%token <sValue> RELATION
 %token <sValue> COMMENT
-%token ENUM STRUCT VAR BREAK RETURN CONTINUE INPUT OUTPUT FUNCTION PROC WHILE FOR TYPEDEF TRUE FALSE BEGIN_BLOCK END_BLOCK IF ELSE ASSIGN MAIN_BLOCK NOT
+%token ENUM STRUCT VAR BREAK RETURN CONTINUE INPUT OUTPUT FUNCTION PROC WHILE FOR TYPEDEF TRUE FALSE BEGIN_BLOCK END_BLOCK IF ELSE ASSIGN MAIN_BLOCK NOT LENGTH
 
 %start prog
 
@@ -38,10 +36,12 @@ prog : declaration_seq  subprograms main_seq;
 declaration_seq : declaration ';' declaration_seq		{}
 				| ;
 
-declaration : VAR id_list ':' TYPE					{};
+declaration : VAR id_list ':' TYPE					{}
+			| user_def								{};
 id_list : ID										{}
+		| ID array_dim								{}
 		| ID ',' id_list							{}
-		| user_def									{};
+		| ID array_dim ',' id_list					{};
 initialization : VAR id_list ':' TYPE ASSIGN exp	{};
 
 
@@ -87,20 +87,18 @@ assign : OPC ID												{}
 		| var OPA exp										{};
 
 		
-control_block : IF '(' bool_exp ')' BEGIN_BLOCK commands END_BLOCK			{}
-				| IF '(' bool_exp ')' BEGIN_BLOCK commands END_BLOCK	
+control_block : IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK				{}
+				| IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK	
 					ELSE BEGIN_BLOCK commands END_BLOCK						{}
-				| WHILE '(' bool_exp ')' BEGIN_BLOCK commands END_BLOCK		{};
-loop_block : FOR '(' declaration ';' bool_exp ';' assign ')'
+				| WHILE '(' exp ')' BEGIN_BLOCK commands END_BLOCK			{};
+loop_block : FOR '(' initialization ';' exp ';' assign ')'
 				BEGIN_BLOCK commands END_BLOCK								{}
-			| FOR '(' assign ';' bool_exp ';' assign ')'
+			| FOR '(' assign ';' exp ';' assign ')'
 				BEGIN_BLOCK commands END_BLOCK								{};
 
 
-exp : arith_exp							{}
-	| bool_exp							{};
-arith_exp : term						{}
-			| arith_exp WEAK_OP term	{};
+exp : term								{}
+	| exp WEAK_OP term					{};
 term : factor							{}
 		| term STRONG_OP factor			{};
 factor : var							{}
@@ -108,22 +106,13 @@ factor : var							{}
 		| NUMBER						{}
 		| REAL							{}
 		| func_proc_call				{}
-		| '(' arith_exp ')'				{}
-		| WEAK_OP factor				{};
-
-		
-bool_exp : b_term						{}
-			| bool_exp BOOL_OP b_term	{}
-b_term : TRUE							{}
+		| '(' exp ')'					{}
+		| WEAK_OP factor				{}
+		| TRUE							{}
 		| FALSE							{}
-		| var							{}
-		| func_proc_call				{}
-		| NOT '(' bool_exp ')'			{}
-		| '(' bool_exp ')'				{}
-		| comparison					{};
+		| NOT factor					{}
+		| LENGTH '(' factor ')'			{};
 
-
-comparison : arith_exp RELATION arith_exp		{};
 var : ID								{}
 	| ID array_dim						{}
 	| ID '.' var						{};
@@ -132,7 +121,7 @@ array_dim : '[' ']'						{}
 			| '[' exp ']'				{}
 			| '[' exp ']' array_dim		{};
 
-main_seq : MAIN_BLOCK '(' ')' BEGIN_BLOCK END_BLOCK ';'		{}
+main_seq : MAIN_BLOCK '(' ')' BEGIN_BLOCK commands END_BLOCK ';'		{}
 		| ;
 %%
 
