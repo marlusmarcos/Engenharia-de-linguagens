@@ -1,0 +1,2372 @@
+Terminais sem uso na gramática
+
+    COMMENT
+
+
+Gramática
+
+    0 $accept: prog $end
+
+    1 prog: declaration_seq subprograms main_seq
+
+    2 declaration_seq: declaration ';' declaration_seq
+    3                | ε
+
+    4 declaration: VAR id_list ':' TYPE
+    5            | user_def
+    6            | type_def
+
+    7 id_list: ID
+    8        | ID array_dim
+    9        | ID ',' id_list
+   10        | ID array_dim ',' id_list
+
+   11 initialization: VAR id_list ':' TYPE ASSIGN exp
+
+   12 subprograms: subprogram ';' subprograms
+   13            | ε
+
+   14 subprogram: function
+   15           | proc
+
+   16 function: FUNCTION ID '(' paramsdef ')' ':' TYPE BEGIN_BLOCK commands END_BLOCK
+
+   17 proc: PROC ID '(' paramsdef ')' BEGIN_BLOCK commands END_BLOCK
+
+   18 paramsdef: var ':' TYPE
+   19          | var ':' TYPE ',' paramsdef
+   20          | ε
+
+   21 params: exp
+   22       | exp ',' params
+   23       | ε
+
+   24 func_proc_call: ID '(' params ')'
+
+   25 commands: command ';' commands
+   26         | ε
+
+   27 command: declaration
+   28        | assign
+   29        | initialization
+   30        | control_block
+   31        | loop_block
+   32        | func_proc_call
+   33        | BREAK
+   34        | RETURN
+   35        | RETURN exp
+   36        | CONTINUE
+   37        | INPUT '(' ')'
+   38        | OUTPUT '(' exp ')'
+
+   39 user_def: STRUCT ID BEGIN_BLOCK declaration_seq END_BLOCK
+   40         | ENUM ID BEGIN_BLOCK enum_init END_BLOCK
+
+   41 enum_init: ID
+   42          | ID ',' enum_init
+   43          | ID id_list ASSIGN NUMBER
+   44          | ID id_list ASSIGN NUMBER ',' enum_init
+
+   45 type_def: TYPEDEF ID ASSIGN user_def
+
+   46 assign: OPC ID
+   47       | ID OPC
+   48       | var ASSIGN exp
+   49       | var OPA exp
+
+   50 control_block: IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK
+   51              | IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK ELSE BEGIN_BLOCK commands END_BLOCK
+   52              | WHILE '(' exp ')' BEGIN_BLOCK commands END_BLOCK
+
+   53 loop_block: FOR '(' initialization ';' exp ';' assign ')' BEGIN_BLOCK commands END_BLOCK
+   54           | FOR '(' assign ';' exp ';' assign ')' BEGIN_BLOCK commands END_BLOCK
+
+   55 exp: term
+   56    | exp WEAK_OP term
+
+   57 term: factor
+   58     | term STRONG_OP factor
+
+   59 factor: var
+   60       | STR_LITERAL
+   61       | NUMBER
+   62       | REAL
+   63       | func_proc_call
+   64       | '(' exp ')'
+   65       | WEAK_OP factor
+   66       | TRUE
+   67       | FALSE
+   68       | NOT factor
+   69       | LENGTH '(' factor ')'
+
+   70 var: ID
+   71    | ID array_dim
+   72    | ID '.' var
+
+   73 array_dim: '[' ']'
+   74          | '[' ']' array_dim
+   75          | '[' exp ']'
+   76          | '[' exp ']' array_dim
+
+   77 main_seq: MAIN_BLOCK '(' ')' BEGIN_BLOCK commands END_BLOCK ';'
+   78         | ε
+
+
+Terminais, com as regras onde eles aparecem
+
+    $end (0) 0
+    '(' (40) 16 17 24 37 38 50 51 52 53 54 64 69 77
+    ')' (41) 16 17 24 37 38 50 51 52 53 54 64 69 77
+    ',' (44) 9 10 19 22 42 44
+    '.' (46) 72
+    ':' (58) 4 11 16 18 19
+    ';' (59) 2 12 25 53 54 77
+    '[' (91) 73 74 75 76
+    ']' (93) 73 74 75 76
+    error (256)
+    ID <sValue> (258) 7 8 9 10 16 17 24 39 40 41 42 43 44 45 46 47 70 71 72
+    TYPE <sValue> (259) 4 11 16 18 19
+    NUMBER <iValue> (260) 43 44 61
+    REAL <fValue> (261) 62
+    STR_LITERAL <sValue> (262) 60
+    OPA <sValue> (263) 49
+    OPC <sValue> (264) 46 47
+    WEAK_OP <sValue> (265) 56 65
+    STRONG_OP <sValue> (266) 58
+    COMMENT <sValue> (267)
+    ENUM (268) 40
+    STRUCT (269) 39
+    VAR (270) 4 11
+    BREAK (271) 33
+    RETURN (272) 34 35
+    CONTINUE (273) 36
+    INPUT (274) 37
+    OUTPUT (275) 38
+    FUNCTION (276) 16
+    PROC (277) 17
+    WHILE (278) 52
+    FOR (279) 53 54
+    TYPEDEF (280) 45
+    TRUE (281) 66
+    FALSE (282) 67
+    BEGIN_BLOCK (283) 16 17 39 40 50 51 52 53 54 77
+    END_BLOCK (284) 16 17 39 40 50 51 52 53 54 77
+    IF (285) 50 51
+    ELSE (286) 51
+    ASSIGN (287) 11 43 44 45 48
+    MAIN_BLOCK (288) 77
+    NOT (289) 68
+    LENGTH (290) 69
+
+
+Não terminais com as regras onde eles aparecem
+
+    $accept (44)
+        à esquerda: 0
+    prog (45)
+        à esquerda: 1
+        à direita: 0
+    declaration_seq <rec> (46)
+        à esquerda: 2 3
+        à direita: 1 2 39
+    declaration (47)
+        à esquerda: 4 5 6
+        à direita: 2 27
+    id_list <rec> (48)
+        à esquerda: 7 8 9 10
+        à direita: 4 9 10 11 43 44
+    initialization (49)
+        à esquerda: 11
+        à direita: 29 53
+    subprograms <rec> (50)
+        à esquerda: 12 13
+        à direita: 1 12
+    subprogram (51)
+        à esquerda: 14 15
+        à direita: 12
+    function (52)
+        à esquerda: 16
+        à direita: 14
+    proc (53)
+        à esquerda: 17
+        à direita: 15
+    paramsdef (54)
+        à esquerda: 18 19 20
+        à direita: 16 17 19
+    params (55)
+        à esquerda: 21 22 23
+        à direita: 22 24
+    func_proc_call (56)
+        à esquerda: 24
+        à direita: 32 63
+    commands <rec> (57)
+        à esquerda: 25 26
+        à direita: 16 17 25 50 51 52 53 54 77
+    command <rec> (58)
+        à esquerda: 27 28 29 30 31 32 33 34 35 36 37 38
+        à direita: 25
+    user_def (59)
+        à esquerda: 39 40
+        à direita: 5 45
+    enum_init (60)
+        à esquerda: 41 42 43 44
+        à direita: 40 42 44
+    type_def (61)
+        à esquerda: 45
+        à direita: 6
+    assign (62)
+        à esquerda: 46 47 48 49
+        à direita: 28 53 54
+    control_block (63)
+        à esquerda: 50 51 52
+        à direita: 30
+    loop_block (64)
+        à esquerda: 53 54
+        à direita: 31
+    exp (65)
+        à esquerda: 55 56
+        à direita: 11 21 22 35 38 48 49 50 51 52 53 54 56 64 75 76
+    term (66)
+        à esquerda: 57 58
+        à direita: 55 56 58
+    factor (67)
+        à esquerda: 59 60 61 62 63 64 65 66 67 68 69
+        à direita: 57 58 65 68 69
+    var (68)
+        à esquerda: 70 71 72
+        à direita: 18 19 48 49 59 72
+    array_dim (69)
+        à esquerda: 73 74 75 76
+        à direita: 8 10 71 74 76
+    main_seq <rec> (70)
+        à esquerda: 77 78
+        à direita: 1
+
+
+Estado 0
+
+    0 $accept: • prog $end
+
+    ENUM     deslocar, e ir ao estado 1
+    STRUCT   deslocar, e ir ao estado 2
+    VAR      deslocar, e ir ao estado 3
+    TYPEDEF  deslocar, e ir ao estado 4
+
+    $padrão  reduzir usando a regra 3 (declaration_seq)
+
+    prog             ir ao estado 5
+    declaration_seq  ir ao estado 6
+    declaration      ir ao estado 7
+    user_def         ir ao estado 8
+    type_def         ir ao estado 9
+
+
+Estado 1
+
+   40 user_def: ENUM • ID BEGIN_BLOCK enum_init END_BLOCK
+
+    ID  deslocar, e ir ao estado 10
+
+
+Estado 2
+
+   39 user_def: STRUCT • ID BEGIN_BLOCK declaration_seq END_BLOCK
+
+    ID  deslocar, e ir ao estado 11
+
+
+Estado 3
+
+    4 declaration: VAR • id_list ':' TYPE
+
+    ID  deslocar, e ir ao estado 12
+
+    id_list  ir ao estado 13
+
+
+Estado 4
+
+   45 type_def: TYPEDEF • ID ASSIGN user_def
+
+    ID  deslocar, e ir ao estado 14
+
+
+Estado 5
+
+    0 $accept: prog • $end
+
+    $end  deslocar, e ir ao estado 15
+
+
+Estado 6
+
+    1 prog: declaration_seq • subprograms main_seq
+
+    FUNCTION  deslocar, e ir ao estado 16
+    PROC      deslocar, e ir ao estado 17
+
+    $padrão  reduzir usando a regra 13 (subprograms)
+
+    subprograms  ir ao estado 18
+    subprogram   ir ao estado 19
+    function     ir ao estado 20
+    proc         ir ao estado 21
+
+
+Estado 7
+
+    2 declaration_seq: declaration • ';' declaration_seq
+
+    ';'  deslocar, e ir ao estado 22
+
+
+Estado 8
+
+    5 declaration: user_def •
+
+    $padrão  reduzir usando a regra 5 (declaration)
+
+
+Estado 9
+
+    6 declaration: type_def •
+
+    $padrão  reduzir usando a regra 6 (declaration)
+
+
+Estado 10
+
+   40 user_def: ENUM ID • BEGIN_BLOCK enum_init END_BLOCK
+
+    BEGIN_BLOCK  deslocar, e ir ao estado 23
+
+
+Estado 11
+
+   39 user_def: STRUCT ID • BEGIN_BLOCK declaration_seq END_BLOCK
+
+    BEGIN_BLOCK  deslocar, e ir ao estado 24
+
+
+Estado 12
+
+    7 id_list: ID •
+    8        | ID • array_dim
+    9        | ID • ',' id_list
+   10        | ID • array_dim ',' id_list
+
+    ','  deslocar, e ir ao estado 25
+    '['  deslocar, e ir ao estado 26
+
+    $padrão  reduzir usando a regra 7 (id_list)
+
+    array_dim  ir ao estado 27
+
+
+Estado 13
+
+    4 declaration: VAR id_list • ':' TYPE
+
+    ':'  deslocar, e ir ao estado 28
+
+
+Estado 14
+
+   45 type_def: TYPEDEF ID • ASSIGN user_def
+
+    ASSIGN  deslocar, e ir ao estado 29
+
+
+Estado 15
+
+    0 $accept: prog $end •
+
+    $padrão  aceitar
+
+
+Estado 16
+
+   16 function: FUNCTION • ID '(' paramsdef ')' ':' TYPE BEGIN_BLOCK commands END_BLOCK
+
+    ID  deslocar, e ir ao estado 30
+
+
+Estado 17
+
+   17 proc: PROC • ID '(' paramsdef ')' BEGIN_BLOCK commands END_BLOCK
+
+    ID  deslocar, e ir ao estado 31
+
+
+Estado 18
+
+    1 prog: declaration_seq subprograms • main_seq
+
+    MAIN_BLOCK  deslocar, e ir ao estado 32
+
+    $padrão  reduzir usando a regra 78 (main_seq)
+
+    main_seq  ir ao estado 33
+
+
+Estado 19
+
+   12 subprograms: subprogram • ';' subprograms
+
+    ';'  deslocar, e ir ao estado 34
+
+
+Estado 20
+
+   14 subprogram: function •
+
+    $padrão  reduzir usando a regra 14 (subprogram)
+
+
+Estado 21
+
+   15 subprogram: proc •
+
+    $padrão  reduzir usando a regra 15 (subprogram)
+
+
+Estado 22
+
+    2 declaration_seq: declaration ';' • declaration_seq
+
+    ENUM     deslocar, e ir ao estado 1
+    STRUCT   deslocar, e ir ao estado 2
+    VAR      deslocar, e ir ao estado 3
+    TYPEDEF  deslocar, e ir ao estado 4
+
+    $padrão  reduzir usando a regra 3 (declaration_seq)
+
+    declaration_seq  ir ao estado 35
+    declaration      ir ao estado 7
+    user_def         ir ao estado 8
+    type_def         ir ao estado 9
+
+
+Estado 23
+
+   40 user_def: ENUM ID BEGIN_BLOCK • enum_init END_BLOCK
+
+    ID  deslocar, e ir ao estado 36
+
+    enum_init  ir ao estado 37
+
+
+Estado 24
+
+   39 user_def: STRUCT ID BEGIN_BLOCK • declaration_seq END_BLOCK
+
+    ENUM     deslocar, e ir ao estado 1
+    STRUCT   deslocar, e ir ao estado 2
+    VAR      deslocar, e ir ao estado 3
+    TYPEDEF  deslocar, e ir ao estado 4
+
+    $padrão  reduzir usando a regra 3 (declaration_seq)
+
+    declaration_seq  ir ao estado 38
+    declaration      ir ao estado 7
+    user_def         ir ao estado 8
+    type_def         ir ao estado 9
+
+
+Estado 25
+
+    9 id_list: ID ',' • id_list
+
+    ID  deslocar, e ir ao estado 12
+
+    id_list  ir ao estado 39
+
+
+Estado 26
+
+   73 array_dim: '[' • ']'
+   74          | '[' • ']' array_dim
+   75          | '[' • exp ']'
+   76          | '[' • exp ']' array_dim
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+    ']'          deslocar, e ir ao estado 50
+
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 52
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 27
+
+    8 id_list: ID array_dim •
+   10        | ID array_dim • ',' id_list
+
+    ','  deslocar, e ir ao estado 56
+
+    $padrão  reduzir usando a regra 8 (id_list)
+
+
+Estado 28
+
+    4 declaration: VAR id_list ':' • TYPE
+
+    TYPE  deslocar, e ir ao estado 57
+
+
+Estado 29
+
+   45 type_def: TYPEDEF ID ASSIGN • user_def
+
+    ENUM    deslocar, e ir ao estado 1
+    STRUCT  deslocar, e ir ao estado 2
+
+    user_def  ir ao estado 58
+
+
+Estado 30
+
+   16 function: FUNCTION ID • '(' paramsdef ')' ':' TYPE BEGIN_BLOCK commands END_BLOCK
+
+    '('  deslocar, e ir ao estado 59
+
+
+Estado 31
+
+   17 proc: PROC ID • '(' paramsdef ')' BEGIN_BLOCK commands END_BLOCK
+
+    '('  deslocar, e ir ao estado 60
+
+
+Estado 32
+
+   77 main_seq: MAIN_BLOCK • '(' ')' BEGIN_BLOCK commands END_BLOCK ';'
+
+    '('  deslocar, e ir ao estado 61
+
+
+Estado 33
+
+    1 prog: declaration_seq subprograms main_seq •
+
+    $padrão  reduzir usando a regra 1 (prog)
+
+
+Estado 34
+
+   12 subprograms: subprogram ';' • subprograms
+
+    FUNCTION  deslocar, e ir ao estado 16
+    PROC      deslocar, e ir ao estado 17
+
+    $padrão  reduzir usando a regra 13 (subprograms)
+
+    subprograms  ir ao estado 62
+    subprogram   ir ao estado 19
+    function     ir ao estado 20
+    proc         ir ao estado 21
+
+
+Estado 35
+
+    2 declaration_seq: declaration ';' declaration_seq •
+
+    $padrão  reduzir usando a regra 2 (declaration_seq)
+
+
+Estado 36
+
+   41 enum_init: ID •
+   42          | ID • ',' enum_init
+   43          | ID • id_list ASSIGN NUMBER
+   44          | ID • id_list ASSIGN NUMBER ',' enum_init
+
+    ID   deslocar, e ir ao estado 12
+    ','  deslocar, e ir ao estado 63
+
+    $padrão  reduzir usando a regra 41 (enum_init)
+
+    id_list  ir ao estado 64
+
+
+Estado 37
+
+   40 user_def: ENUM ID BEGIN_BLOCK enum_init • END_BLOCK
+
+    END_BLOCK  deslocar, e ir ao estado 65
+
+
+Estado 38
+
+   39 user_def: STRUCT ID BEGIN_BLOCK declaration_seq • END_BLOCK
+
+    END_BLOCK  deslocar, e ir ao estado 66
+
+
+Estado 39
+
+    9 id_list: ID ',' id_list •
+
+    $padrão  reduzir usando a regra 9 (id_list)
+
+
+Estado 40
+
+   24 func_proc_call: ID • '(' params ')'
+   70 var: ID •
+   71    | ID • array_dim
+   72    | ID • '.' var
+
+    '('  deslocar, e ir ao estado 67
+    '.'  deslocar, e ir ao estado 68
+    '['  deslocar, e ir ao estado 26
+
+    $padrão  reduzir usando a regra 70 (var)
+
+    array_dim  ir ao estado 69
+
+
+Estado 41
+
+   61 factor: NUMBER •
+
+    $padrão  reduzir usando a regra 61 (factor)
+
+
+Estado 42
+
+   62 factor: REAL •
+
+    $padrão  reduzir usando a regra 62 (factor)
+
+
+Estado 43
+
+   60 factor: STR_LITERAL •
+
+    $padrão  reduzir usando a regra 60 (factor)
+
+
+Estado 44
+
+   65 factor: WEAK_OP • factor
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    factor          ir ao estado 70
+    var             ir ao estado 55
+
+
+Estado 45
+
+   66 factor: TRUE •
+
+    $padrão  reduzir usando a regra 66 (factor)
+
+
+Estado 46
+
+   67 factor: FALSE •
+
+    $padrão  reduzir usando a regra 67 (factor)
+
+
+Estado 47
+
+   68 factor: NOT • factor
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    factor          ir ao estado 71
+    var             ir ao estado 55
+
+
+Estado 48
+
+   69 factor: LENGTH • '(' factor ')'
+
+    '('  deslocar, e ir ao estado 72
+
+
+Estado 49
+
+   64 factor: '(' • exp ')'
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 73
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 50
+
+   73 array_dim: '[' ']' •
+   74          | '[' ']' • array_dim
+
+    '['  deslocar, e ir ao estado 26
+
+    $padrão  reduzir usando a regra 73 (array_dim)
+
+    array_dim  ir ao estado 74
+
+
+Estado 51
+
+   63 factor: func_proc_call •
+
+    $padrão  reduzir usando a regra 63 (factor)
+
+
+Estado 52
+
+   56 exp: exp • WEAK_OP term
+   75 array_dim: '[' exp • ']'
+   76          | '[' exp • ']' array_dim
+
+    WEAK_OP  deslocar, e ir ao estado 75
+    ']'      deslocar, e ir ao estado 76
+
+
+Estado 53
+
+   55 exp: term •
+   58 term: term • STRONG_OP factor
+
+    STRONG_OP  deslocar, e ir ao estado 77
+
+    $padrão  reduzir usando a regra 55 (exp)
+
+
+Estado 54
+
+   57 term: factor •
+
+    $padrão  reduzir usando a regra 57 (term)
+
+
+Estado 55
+
+   59 factor: var •
+
+    $padrão  reduzir usando a regra 59 (factor)
+
+
+Estado 56
+
+   10 id_list: ID array_dim ',' • id_list
+
+    ID  deslocar, e ir ao estado 12
+
+    id_list  ir ao estado 78
+
+
+Estado 57
+
+    4 declaration: VAR id_list ':' TYPE •
+
+    $padrão  reduzir usando a regra 4 (declaration)
+
+
+Estado 58
+
+   45 type_def: TYPEDEF ID ASSIGN user_def •
+
+    $padrão  reduzir usando a regra 45 (type_def)
+
+
+Estado 59
+
+   16 function: FUNCTION ID '(' • paramsdef ')' ':' TYPE BEGIN_BLOCK commands END_BLOCK
+
+    ID  deslocar, e ir ao estado 79
+
+    $padrão  reduzir usando a regra 20 (paramsdef)
+
+    paramsdef  ir ao estado 80
+    var        ir ao estado 81
+
+
+Estado 60
+
+   17 proc: PROC ID '(' • paramsdef ')' BEGIN_BLOCK commands END_BLOCK
+
+    ID  deslocar, e ir ao estado 79
+
+    $padrão  reduzir usando a regra 20 (paramsdef)
+
+    paramsdef  ir ao estado 82
+    var        ir ao estado 81
+
+
+Estado 61
+
+   77 main_seq: MAIN_BLOCK '(' • ')' BEGIN_BLOCK commands END_BLOCK ';'
+
+    ')'  deslocar, e ir ao estado 83
+
+
+Estado 62
+
+   12 subprograms: subprogram ';' subprograms •
+
+    $padrão  reduzir usando a regra 12 (subprograms)
+
+
+Estado 63
+
+   42 enum_init: ID ',' • enum_init
+
+    ID  deslocar, e ir ao estado 36
+
+    enum_init  ir ao estado 84
+
+
+Estado 64
+
+   43 enum_init: ID id_list • ASSIGN NUMBER
+   44          | ID id_list • ASSIGN NUMBER ',' enum_init
+
+    ASSIGN  deslocar, e ir ao estado 85
+
+
+Estado 65
+
+   40 user_def: ENUM ID BEGIN_BLOCK enum_init END_BLOCK •
+
+    $padrão  reduzir usando a regra 40 (user_def)
+
+
+Estado 66
+
+   39 user_def: STRUCT ID BEGIN_BLOCK declaration_seq END_BLOCK •
+
+    $padrão  reduzir usando a regra 39 (user_def)
+
+
+Estado 67
+
+   24 func_proc_call: ID '(' • params ')'
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 23 (params)
+
+    params          ir ao estado 86
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 87
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 68
+
+   72 var: ID '.' • var
+
+    ID  deslocar, e ir ao estado 79
+
+    var  ir ao estado 88
+
+
+Estado 69
+
+   71 var: ID array_dim •
+
+    $padrão  reduzir usando a regra 71 (var)
+
+
+Estado 70
+
+   65 factor: WEAK_OP factor •
+
+    $padrão  reduzir usando a regra 65 (factor)
+
+
+Estado 71
+
+   68 factor: NOT factor •
+
+    $padrão  reduzir usando a regra 68 (factor)
+
+
+Estado 72
+
+   69 factor: LENGTH '(' • factor ')'
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    factor          ir ao estado 89
+    var             ir ao estado 55
+
+
+Estado 73
+
+   56 exp: exp • WEAK_OP term
+   64 factor: '(' exp • ')'
+
+    WEAK_OP  deslocar, e ir ao estado 75
+    ')'      deslocar, e ir ao estado 90
+
+
+Estado 74
+
+   74 array_dim: '[' ']' array_dim •
+
+    $padrão  reduzir usando a regra 74 (array_dim)
+
+
+Estado 75
+
+   56 exp: exp WEAK_OP • term
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    term            ir ao estado 91
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 76
+
+   75 array_dim: '[' exp ']' •
+   76          | '[' exp ']' • array_dim
+
+    '['  deslocar, e ir ao estado 26
+
+    $padrão  reduzir usando a regra 75 (array_dim)
+
+    array_dim  ir ao estado 92
+
+
+Estado 77
+
+   58 term: term STRONG_OP • factor
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    factor          ir ao estado 93
+    var             ir ao estado 55
+
+
+Estado 78
+
+   10 id_list: ID array_dim ',' id_list •
+
+    $padrão  reduzir usando a regra 10 (id_list)
+
+
+Estado 79
+
+   70 var: ID •
+   71    | ID • array_dim
+   72    | ID • '.' var
+
+    '.'  deslocar, e ir ao estado 68
+    '['  deslocar, e ir ao estado 26
+
+    $padrão  reduzir usando a regra 70 (var)
+
+    array_dim  ir ao estado 69
+
+
+Estado 80
+
+   16 function: FUNCTION ID '(' paramsdef • ')' ':' TYPE BEGIN_BLOCK commands END_BLOCK
+
+    ')'  deslocar, e ir ao estado 94
+
+
+Estado 81
+
+   18 paramsdef: var • ':' TYPE
+   19          | var • ':' TYPE ',' paramsdef
+
+    ':'  deslocar, e ir ao estado 95
+
+
+Estado 82
+
+   17 proc: PROC ID '(' paramsdef • ')' BEGIN_BLOCK commands END_BLOCK
+
+    ')'  deslocar, e ir ao estado 96
+
+
+Estado 83
+
+   77 main_seq: MAIN_BLOCK '(' ')' • BEGIN_BLOCK commands END_BLOCK ';'
+
+    BEGIN_BLOCK  deslocar, e ir ao estado 97
+
+
+Estado 84
+
+   42 enum_init: ID ',' enum_init •
+
+    $padrão  reduzir usando a regra 42 (enum_init)
+
+
+Estado 85
+
+   43 enum_init: ID id_list ASSIGN • NUMBER
+   44          | ID id_list ASSIGN • NUMBER ',' enum_init
+
+    NUMBER  deslocar, e ir ao estado 98
+
+
+Estado 86
+
+   24 func_proc_call: ID '(' params • ')'
+
+    ')'  deslocar, e ir ao estado 99
+
+
+Estado 87
+
+   21 params: exp •
+   22       | exp • ',' params
+   56 exp: exp • WEAK_OP term
+
+    WEAK_OP  deslocar, e ir ao estado 75
+    ','      deslocar, e ir ao estado 100
+
+    $padrão  reduzir usando a regra 21 (params)
+
+
+Estado 88
+
+   72 var: ID '.' var •
+
+    $padrão  reduzir usando a regra 72 (var)
+
+
+Estado 89
+
+   69 factor: LENGTH '(' factor • ')'
+
+    ')'  deslocar, e ir ao estado 101
+
+
+Estado 90
+
+   64 factor: '(' exp ')' •
+
+    $padrão  reduzir usando a regra 64 (factor)
+
+
+Estado 91
+
+   56 exp: exp WEAK_OP term •
+   58 term: term • STRONG_OP factor
+
+    STRONG_OP  deslocar, e ir ao estado 77
+
+    $padrão  reduzir usando a regra 56 (exp)
+
+
+Estado 92
+
+   76 array_dim: '[' exp ']' array_dim •
+
+    $padrão  reduzir usando a regra 76 (array_dim)
+
+
+Estado 93
+
+   58 term: term STRONG_OP factor •
+
+    $padrão  reduzir usando a regra 58 (term)
+
+
+Estado 94
+
+   16 function: FUNCTION ID '(' paramsdef ')' • ':' TYPE BEGIN_BLOCK commands END_BLOCK
+
+    ':'  deslocar, e ir ao estado 102
+
+
+Estado 95
+
+   18 paramsdef: var ':' • TYPE
+   19          | var ':' • TYPE ',' paramsdef
+
+    TYPE  deslocar, e ir ao estado 103
+
+
+Estado 96
+
+   17 proc: PROC ID '(' paramsdef ')' • BEGIN_BLOCK commands END_BLOCK
+
+    BEGIN_BLOCK  deslocar, e ir ao estado 104
+
+
+Estado 97
+
+   77 main_seq: MAIN_BLOCK '(' ')' BEGIN_BLOCK • commands END_BLOCK ';'
+
+    ID        deslocar, e ir ao estado 105
+    OPC       deslocar, e ir ao estado 106
+    ENUM      deslocar, e ir ao estado 1
+    STRUCT    deslocar, e ir ao estado 2
+    VAR       deslocar, e ir ao estado 107
+    BREAK     deslocar, e ir ao estado 108
+    RETURN    deslocar, e ir ao estado 109
+    CONTINUE  deslocar, e ir ao estado 110
+    INPUT     deslocar, e ir ao estado 111
+    OUTPUT    deslocar, e ir ao estado 112
+    WHILE     deslocar, e ir ao estado 113
+    FOR       deslocar, e ir ao estado 114
+    TYPEDEF   deslocar, e ir ao estado 4
+    IF        deslocar, e ir ao estado 115
+
+    $padrão  reduzir usando a regra 26 (commands)
+
+    declaration     ir ao estado 116
+    initialization  ir ao estado 117
+    func_proc_call  ir ao estado 118
+    commands        ir ao estado 119
+    command         ir ao estado 120
+    user_def        ir ao estado 8
+    type_def        ir ao estado 9
+    assign          ir ao estado 121
+    control_block   ir ao estado 122
+    loop_block      ir ao estado 123
+    var             ir ao estado 124
+
+
+Estado 98
+
+   43 enum_init: ID id_list ASSIGN NUMBER •
+   44          | ID id_list ASSIGN NUMBER • ',' enum_init
+
+    ','  deslocar, e ir ao estado 125
+
+    $padrão  reduzir usando a regra 43 (enum_init)
+
+
+Estado 99
+
+   24 func_proc_call: ID '(' params ')' •
+
+    $padrão  reduzir usando a regra 24 (func_proc_call)
+
+
+Estado 100
+
+   22 params: exp ',' • params
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 23 (params)
+
+    params          ir ao estado 126
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 87
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 101
+
+   69 factor: LENGTH '(' factor ')' •
+
+    $padrão  reduzir usando a regra 69 (factor)
+
+
+Estado 102
+
+   16 function: FUNCTION ID '(' paramsdef ')' ':' • TYPE BEGIN_BLOCK commands END_BLOCK
+
+    TYPE  deslocar, e ir ao estado 127
+
+
+Estado 103
+
+   18 paramsdef: var ':' TYPE •
+   19          | var ':' TYPE • ',' paramsdef
+
+    ','  deslocar, e ir ao estado 128
+
+    $padrão  reduzir usando a regra 18 (paramsdef)
+
+
+Estado 104
+
+   17 proc: PROC ID '(' paramsdef ')' BEGIN_BLOCK • commands END_BLOCK
+
+    ID        deslocar, e ir ao estado 105
+    OPC       deslocar, e ir ao estado 106
+    ENUM      deslocar, e ir ao estado 1
+    STRUCT    deslocar, e ir ao estado 2
+    VAR       deslocar, e ir ao estado 107
+    BREAK     deslocar, e ir ao estado 108
+    RETURN    deslocar, e ir ao estado 109
+    CONTINUE  deslocar, e ir ao estado 110
+    INPUT     deslocar, e ir ao estado 111
+    OUTPUT    deslocar, e ir ao estado 112
+    WHILE     deslocar, e ir ao estado 113
+    FOR       deslocar, e ir ao estado 114
+    TYPEDEF   deslocar, e ir ao estado 4
+    IF        deslocar, e ir ao estado 115
+
+    $padrão  reduzir usando a regra 26 (commands)
+
+    declaration     ir ao estado 116
+    initialization  ir ao estado 117
+    func_proc_call  ir ao estado 118
+    commands        ir ao estado 129
+    command         ir ao estado 120
+    user_def        ir ao estado 8
+    type_def        ir ao estado 9
+    assign          ir ao estado 121
+    control_block   ir ao estado 122
+    loop_block      ir ao estado 123
+    var             ir ao estado 124
+
+
+Estado 105
+
+   24 func_proc_call: ID • '(' params ')'
+   47 assign: ID • OPC
+   70 var: ID •
+   71    | ID • array_dim
+   72    | ID • '.' var
+
+    OPC  deslocar, e ir ao estado 130
+    '('  deslocar, e ir ao estado 67
+    '.'  deslocar, e ir ao estado 68
+    '['  deslocar, e ir ao estado 26
+
+    $padrão  reduzir usando a regra 70 (var)
+
+    array_dim  ir ao estado 69
+
+
+Estado 106
+
+   46 assign: OPC • ID
+
+    ID  deslocar, e ir ao estado 131
+
+
+Estado 107
+
+    4 declaration: VAR • id_list ':' TYPE
+   11 initialization: VAR • id_list ':' TYPE ASSIGN exp
+
+    ID  deslocar, e ir ao estado 12
+
+    id_list  ir ao estado 132
+
+
+Estado 108
+
+   33 command: BREAK •
+
+    $padrão  reduzir usando a regra 33 (command)
+
+
+Estado 109
+
+   34 command: RETURN •
+   35        | RETURN • exp
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 34 (command)
+
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 133
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 110
+
+   36 command: CONTINUE •
+
+    $padrão  reduzir usando a regra 36 (command)
+
+
+Estado 111
+
+   37 command: INPUT • '(' ')'
+
+    '('  deslocar, e ir ao estado 134
+
+
+Estado 112
+
+   38 command: OUTPUT • '(' exp ')'
+
+    '('  deslocar, e ir ao estado 135
+
+
+Estado 113
+
+   52 control_block: WHILE • '(' exp ')' BEGIN_BLOCK commands END_BLOCK
+
+    '('  deslocar, e ir ao estado 136
+
+
+Estado 114
+
+   53 loop_block: FOR • '(' initialization ';' exp ';' assign ')' BEGIN_BLOCK commands END_BLOCK
+   54           | FOR • '(' assign ';' exp ';' assign ')' BEGIN_BLOCK commands END_BLOCK
+
+    '('  deslocar, e ir ao estado 137
+
+
+Estado 115
+
+   50 control_block: IF • '(' exp ')' BEGIN_BLOCK commands END_BLOCK
+   51              | IF • '(' exp ')' BEGIN_BLOCK commands END_BLOCK ELSE BEGIN_BLOCK commands END_BLOCK
+
+    '('  deslocar, e ir ao estado 138
+
+
+Estado 116
+
+   27 command: declaration •
+
+    $padrão  reduzir usando a regra 27 (command)
+
+
+Estado 117
+
+   29 command: initialization •
+
+    $padrão  reduzir usando a regra 29 (command)
+
+
+Estado 118
+
+   32 command: func_proc_call •
+
+    $padrão  reduzir usando a regra 32 (command)
+
+
+Estado 119
+
+   77 main_seq: MAIN_BLOCK '(' ')' BEGIN_BLOCK commands • END_BLOCK ';'
+
+    END_BLOCK  deslocar, e ir ao estado 139
+
+
+Estado 120
+
+   25 commands: command • ';' commands
+
+    ';'  deslocar, e ir ao estado 140
+
+
+Estado 121
+
+   28 command: assign •
+
+    $padrão  reduzir usando a regra 28 (command)
+
+
+Estado 122
+
+   30 command: control_block •
+
+    $padrão  reduzir usando a regra 30 (command)
+
+
+Estado 123
+
+   31 command: loop_block •
+
+    $padrão  reduzir usando a regra 31 (command)
+
+
+Estado 124
+
+   48 assign: var • ASSIGN exp
+   49       | var • OPA exp
+
+    OPA     deslocar, e ir ao estado 141
+    ASSIGN  deslocar, e ir ao estado 142
+
+
+Estado 125
+
+   44 enum_init: ID id_list ASSIGN NUMBER ',' • enum_init
+
+    ID  deslocar, e ir ao estado 36
+
+    enum_init  ir ao estado 143
+
+
+Estado 126
+
+   22 params: exp ',' params •
+
+    $padrão  reduzir usando a regra 22 (params)
+
+
+Estado 127
+
+   16 function: FUNCTION ID '(' paramsdef ')' ':' TYPE • BEGIN_BLOCK commands END_BLOCK
+
+    BEGIN_BLOCK  deslocar, e ir ao estado 144
+
+
+Estado 128
+
+   19 paramsdef: var ':' TYPE ',' • paramsdef
+
+    ID  deslocar, e ir ao estado 79
+
+    $padrão  reduzir usando a regra 20 (paramsdef)
+
+    paramsdef  ir ao estado 145
+    var        ir ao estado 81
+
+
+Estado 129
+
+   17 proc: PROC ID '(' paramsdef ')' BEGIN_BLOCK commands • END_BLOCK
+
+    END_BLOCK  deslocar, e ir ao estado 146
+
+
+Estado 130
+
+   47 assign: ID OPC •
+
+    $padrão  reduzir usando a regra 47 (assign)
+
+
+Estado 131
+
+   46 assign: OPC ID •
+
+    $padrão  reduzir usando a regra 46 (assign)
+
+
+Estado 132
+
+    4 declaration: VAR id_list • ':' TYPE
+   11 initialization: VAR id_list • ':' TYPE ASSIGN exp
+
+    ':'  deslocar, e ir ao estado 147
+
+
+Estado 133
+
+   35 command: RETURN exp •
+   56 exp: exp • WEAK_OP term
+
+    WEAK_OP  deslocar, e ir ao estado 75
+
+    $padrão  reduzir usando a regra 35 (command)
+
+
+Estado 134
+
+   37 command: INPUT '(' • ')'
+
+    ')'  deslocar, e ir ao estado 148
+
+
+Estado 135
+
+   38 command: OUTPUT '(' • exp ')'
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 149
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 136
+
+   52 control_block: WHILE '(' • exp ')' BEGIN_BLOCK commands END_BLOCK
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 150
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 137
+
+   53 loop_block: FOR '(' • initialization ';' exp ';' assign ')' BEGIN_BLOCK commands END_BLOCK
+   54           | FOR '(' • assign ';' exp ';' assign ')' BEGIN_BLOCK commands END_BLOCK
+
+    ID   deslocar, e ir ao estado 151
+    OPC  deslocar, e ir ao estado 106
+    VAR  deslocar, e ir ao estado 152
+
+    initialization  ir ao estado 153
+    assign          ir ao estado 154
+    var             ir ao estado 124
+
+
+Estado 138
+
+   50 control_block: IF '(' • exp ')' BEGIN_BLOCK commands END_BLOCK
+   51              | IF '(' • exp ')' BEGIN_BLOCK commands END_BLOCK ELSE BEGIN_BLOCK commands END_BLOCK
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 155
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 139
+
+   77 main_seq: MAIN_BLOCK '(' ')' BEGIN_BLOCK commands END_BLOCK • ';'
+
+    ';'  deslocar, e ir ao estado 156
+
+
+Estado 140
+
+   25 commands: command ';' • commands
+
+    ID        deslocar, e ir ao estado 105
+    OPC       deslocar, e ir ao estado 106
+    ENUM      deslocar, e ir ao estado 1
+    STRUCT    deslocar, e ir ao estado 2
+    VAR       deslocar, e ir ao estado 107
+    BREAK     deslocar, e ir ao estado 108
+    RETURN    deslocar, e ir ao estado 109
+    CONTINUE  deslocar, e ir ao estado 110
+    INPUT     deslocar, e ir ao estado 111
+    OUTPUT    deslocar, e ir ao estado 112
+    WHILE     deslocar, e ir ao estado 113
+    FOR       deslocar, e ir ao estado 114
+    TYPEDEF   deslocar, e ir ao estado 4
+    IF        deslocar, e ir ao estado 115
+
+    $padrão  reduzir usando a regra 26 (commands)
+
+    declaration     ir ao estado 116
+    initialization  ir ao estado 117
+    func_proc_call  ir ao estado 118
+    commands        ir ao estado 157
+    command         ir ao estado 120
+    user_def        ir ao estado 8
+    type_def        ir ao estado 9
+    assign          ir ao estado 121
+    control_block   ir ao estado 122
+    loop_block      ir ao estado 123
+    var             ir ao estado 124
+
+
+Estado 141
+
+   49 assign: var OPA • exp
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 158
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 142
+
+   48 assign: var ASSIGN • exp
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 159
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 143
+
+   44 enum_init: ID id_list ASSIGN NUMBER ',' enum_init •
+
+    $padrão  reduzir usando a regra 44 (enum_init)
+
+
+Estado 144
+
+   16 function: FUNCTION ID '(' paramsdef ')' ':' TYPE BEGIN_BLOCK • commands END_BLOCK
+
+    ID        deslocar, e ir ao estado 105
+    OPC       deslocar, e ir ao estado 106
+    ENUM      deslocar, e ir ao estado 1
+    STRUCT    deslocar, e ir ao estado 2
+    VAR       deslocar, e ir ao estado 107
+    BREAK     deslocar, e ir ao estado 108
+    RETURN    deslocar, e ir ao estado 109
+    CONTINUE  deslocar, e ir ao estado 110
+    INPUT     deslocar, e ir ao estado 111
+    OUTPUT    deslocar, e ir ao estado 112
+    WHILE     deslocar, e ir ao estado 113
+    FOR       deslocar, e ir ao estado 114
+    TYPEDEF   deslocar, e ir ao estado 4
+    IF        deslocar, e ir ao estado 115
+
+    $padrão  reduzir usando a regra 26 (commands)
+
+    declaration     ir ao estado 116
+    initialization  ir ao estado 117
+    func_proc_call  ir ao estado 118
+    commands        ir ao estado 160
+    command         ir ao estado 120
+    user_def        ir ao estado 8
+    type_def        ir ao estado 9
+    assign          ir ao estado 121
+    control_block   ir ao estado 122
+    loop_block      ir ao estado 123
+    var             ir ao estado 124
+
+
+Estado 145
+
+   19 paramsdef: var ':' TYPE ',' paramsdef •
+
+    $padrão  reduzir usando a regra 19 (paramsdef)
+
+
+Estado 146
+
+   17 proc: PROC ID '(' paramsdef ')' BEGIN_BLOCK commands END_BLOCK •
+
+    $padrão  reduzir usando a regra 17 (proc)
+
+
+Estado 147
+
+    4 declaration: VAR id_list ':' • TYPE
+   11 initialization: VAR id_list ':' • TYPE ASSIGN exp
+
+    TYPE  deslocar, e ir ao estado 161
+
+
+Estado 148
+
+   37 command: INPUT '(' ')' •
+
+    $padrão  reduzir usando a regra 37 (command)
+
+
+Estado 149
+
+   38 command: OUTPUT '(' exp • ')'
+   56 exp: exp • WEAK_OP term
+
+    WEAK_OP  deslocar, e ir ao estado 75
+    ')'      deslocar, e ir ao estado 162
+
+
+Estado 150
+
+   52 control_block: WHILE '(' exp • ')' BEGIN_BLOCK commands END_BLOCK
+   56 exp: exp • WEAK_OP term
+
+    WEAK_OP  deslocar, e ir ao estado 75
+    ')'      deslocar, e ir ao estado 163
+
+
+Estado 151
+
+   47 assign: ID • OPC
+   70 var: ID •
+   71    | ID • array_dim
+   72    | ID • '.' var
+
+    OPC  deslocar, e ir ao estado 130
+    '.'  deslocar, e ir ao estado 68
+    '['  deslocar, e ir ao estado 26
+
+    $padrão  reduzir usando a regra 70 (var)
+
+    array_dim  ir ao estado 69
+
+
+Estado 152
+
+   11 initialization: VAR • id_list ':' TYPE ASSIGN exp
+
+    ID  deslocar, e ir ao estado 12
+
+    id_list  ir ao estado 164
+
+
+Estado 153
+
+   53 loop_block: FOR '(' initialization • ';' exp ';' assign ')' BEGIN_BLOCK commands END_BLOCK
+
+    ';'  deslocar, e ir ao estado 165
+
+
+Estado 154
+
+   54 loop_block: FOR '(' assign • ';' exp ';' assign ')' BEGIN_BLOCK commands END_BLOCK
+
+    ';'  deslocar, e ir ao estado 166
+
+
+Estado 155
+
+   50 control_block: IF '(' exp • ')' BEGIN_BLOCK commands END_BLOCK
+   51              | IF '(' exp • ')' BEGIN_BLOCK commands END_BLOCK ELSE BEGIN_BLOCK commands END_BLOCK
+   56 exp: exp • WEAK_OP term
+
+    WEAK_OP  deslocar, e ir ao estado 75
+    ')'      deslocar, e ir ao estado 167
+
+
+Estado 156
+
+   77 main_seq: MAIN_BLOCK '(' ')' BEGIN_BLOCK commands END_BLOCK ';' •
+
+    $padrão  reduzir usando a regra 77 (main_seq)
+
+
+Estado 157
+
+   25 commands: command ';' commands •
+
+    $padrão  reduzir usando a regra 25 (commands)
+
+
+Estado 158
+
+   49 assign: var OPA exp •
+   56 exp: exp • WEAK_OP term
+
+    WEAK_OP  deslocar, e ir ao estado 75
+
+    $padrão  reduzir usando a regra 49 (assign)
+
+
+Estado 159
+
+   48 assign: var ASSIGN exp •
+   56 exp: exp • WEAK_OP term
+
+    WEAK_OP  deslocar, e ir ao estado 75
+
+    $padrão  reduzir usando a regra 48 (assign)
+
+
+Estado 160
+
+   16 function: FUNCTION ID '(' paramsdef ')' ':' TYPE BEGIN_BLOCK commands • END_BLOCK
+
+    END_BLOCK  deslocar, e ir ao estado 168
+
+
+Estado 161
+
+    4 declaration: VAR id_list ':' TYPE •
+   11 initialization: VAR id_list ':' TYPE • ASSIGN exp
+
+    ASSIGN  deslocar, e ir ao estado 169
+
+    $padrão  reduzir usando a regra 4 (declaration)
+
+
+Estado 162
+
+   38 command: OUTPUT '(' exp ')' •
+
+    $padrão  reduzir usando a regra 38 (command)
+
+
+Estado 163
+
+   52 control_block: WHILE '(' exp ')' • BEGIN_BLOCK commands END_BLOCK
+
+    BEGIN_BLOCK  deslocar, e ir ao estado 170
+
+
+Estado 164
+
+   11 initialization: VAR id_list • ':' TYPE ASSIGN exp
+
+    ':'  deslocar, e ir ao estado 171
+
+
+Estado 165
+
+   53 loop_block: FOR '(' initialization ';' • exp ';' assign ')' BEGIN_BLOCK commands END_BLOCK
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 172
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 166
+
+   54 loop_block: FOR '(' assign ';' • exp ';' assign ')' BEGIN_BLOCK commands END_BLOCK
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 173
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 167
+
+   50 control_block: IF '(' exp ')' • BEGIN_BLOCK commands END_BLOCK
+   51              | IF '(' exp ')' • BEGIN_BLOCK commands END_BLOCK ELSE BEGIN_BLOCK commands END_BLOCK
+
+    BEGIN_BLOCK  deslocar, e ir ao estado 174
+
+
+Estado 168
+
+   16 function: FUNCTION ID '(' paramsdef ')' ':' TYPE BEGIN_BLOCK commands END_BLOCK •
+
+    $padrão  reduzir usando a regra 16 (function)
+
+
+Estado 169
+
+   11 initialization: VAR id_list ':' TYPE ASSIGN • exp
+
+    ID           deslocar, e ir ao estado 40
+    NUMBER       deslocar, e ir ao estado 41
+    REAL         deslocar, e ir ao estado 42
+    STR_LITERAL  deslocar, e ir ao estado 43
+    WEAK_OP      deslocar, e ir ao estado 44
+    TRUE         deslocar, e ir ao estado 45
+    FALSE        deslocar, e ir ao estado 46
+    NOT          deslocar, e ir ao estado 47
+    LENGTH       deslocar, e ir ao estado 48
+    '('          deslocar, e ir ao estado 49
+
+    func_proc_call  ir ao estado 51
+    exp             ir ao estado 175
+    term            ir ao estado 53
+    factor          ir ao estado 54
+    var             ir ao estado 55
+
+
+Estado 170
+
+   52 control_block: WHILE '(' exp ')' BEGIN_BLOCK • commands END_BLOCK
+
+    ID        deslocar, e ir ao estado 105
+    OPC       deslocar, e ir ao estado 106
+    ENUM      deslocar, e ir ao estado 1
+    STRUCT    deslocar, e ir ao estado 2
+    VAR       deslocar, e ir ao estado 107
+    BREAK     deslocar, e ir ao estado 108
+    RETURN    deslocar, e ir ao estado 109
+    CONTINUE  deslocar, e ir ao estado 110
+    INPUT     deslocar, e ir ao estado 111
+    OUTPUT    deslocar, e ir ao estado 112
+    WHILE     deslocar, e ir ao estado 113
+    FOR       deslocar, e ir ao estado 114
+    TYPEDEF   deslocar, e ir ao estado 4
+    IF        deslocar, e ir ao estado 115
+
+    $padrão  reduzir usando a regra 26 (commands)
+
+    declaration     ir ao estado 116
+    initialization  ir ao estado 117
+    func_proc_call  ir ao estado 118
+    commands        ir ao estado 176
+    command         ir ao estado 120
+    user_def        ir ao estado 8
+    type_def        ir ao estado 9
+    assign          ir ao estado 121
+    control_block   ir ao estado 122
+    loop_block      ir ao estado 123
+    var             ir ao estado 124
+
+
+Estado 171
+
+   11 initialization: VAR id_list ':' • TYPE ASSIGN exp
+
+    TYPE  deslocar, e ir ao estado 177
+
+
+Estado 172
+
+   53 loop_block: FOR '(' initialization ';' exp • ';' assign ')' BEGIN_BLOCK commands END_BLOCK
+   56 exp: exp • WEAK_OP term
+
+    WEAK_OP  deslocar, e ir ao estado 75
+    ';'      deslocar, e ir ao estado 178
+
+
+Estado 173
+
+   54 loop_block: FOR '(' assign ';' exp • ';' assign ')' BEGIN_BLOCK commands END_BLOCK
+   56 exp: exp • WEAK_OP term
+
+    WEAK_OP  deslocar, e ir ao estado 75
+    ';'      deslocar, e ir ao estado 179
+
+
+Estado 174
+
+   50 control_block: IF '(' exp ')' BEGIN_BLOCK • commands END_BLOCK
+   51              | IF '(' exp ')' BEGIN_BLOCK • commands END_BLOCK ELSE BEGIN_BLOCK commands END_BLOCK
+
+    ID        deslocar, e ir ao estado 105
+    OPC       deslocar, e ir ao estado 106
+    ENUM      deslocar, e ir ao estado 1
+    STRUCT    deslocar, e ir ao estado 2
+    VAR       deslocar, e ir ao estado 107
+    BREAK     deslocar, e ir ao estado 108
+    RETURN    deslocar, e ir ao estado 109
+    CONTINUE  deslocar, e ir ao estado 110
+    INPUT     deslocar, e ir ao estado 111
+    OUTPUT    deslocar, e ir ao estado 112
+    WHILE     deslocar, e ir ao estado 113
+    FOR       deslocar, e ir ao estado 114
+    TYPEDEF   deslocar, e ir ao estado 4
+    IF        deslocar, e ir ao estado 115
+
+    $padrão  reduzir usando a regra 26 (commands)
+
+    declaration     ir ao estado 116
+    initialization  ir ao estado 117
+    func_proc_call  ir ao estado 118
+    commands        ir ao estado 180
+    command         ir ao estado 120
+    user_def        ir ao estado 8
+    type_def        ir ao estado 9
+    assign          ir ao estado 121
+    control_block   ir ao estado 122
+    loop_block      ir ao estado 123
+    var             ir ao estado 124
+
+
+Estado 175
+
+   11 initialization: VAR id_list ':' TYPE ASSIGN exp •
+   56 exp: exp • WEAK_OP term
+
+    WEAK_OP  deslocar, e ir ao estado 75
+
+    $padrão  reduzir usando a regra 11 (initialization)
+
+
+Estado 176
+
+   52 control_block: WHILE '(' exp ')' BEGIN_BLOCK commands • END_BLOCK
+
+    END_BLOCK  deslocar, e ir ao estado 181
+
+
+Estado 177
+
+   11 initialization: VAR id_list ':' TYPE • ASSIGN exp
+
+    ASSIGN  deslocar, e ir ao estado 169
+
+
+Estado 178
+
+   53 loop_block: FOR '(' initialization ';' exp ';' • assign ')' BEGIN_BLOCK commands END_BLOCK
+
+    ID   deslocar, e ir ao estado 151
+    OPC  deslocar, e ir ao estado 106
+
+    assign  ir ao estado 182
+    var     ir ao estado 124
+
+
+Estado 179
+
+   54 loop_block: FOR '(' assign ';' exp ';' • assign ')' BEGIN_BLOCK commands END_BLOCK
+
+    ID   deslocar, e ir ao estado 151
+    OPC  deslocar, e ir ao estado 106
+
+    assign  ir ao estado 183
+    var     ir ao estado 124
+
+
+Estado 180
+
+   50 control_block: IF '(' exp ')' BEGIN_BLOCK commands • END_BLOCK
+   51              | IF '(' exp ')' BEGIN_BLOCK commands • END_BLOCK ELSE BEGIN_BLOCK commands END_BLOCK
+
+    END_BLOCK  deslocar, e ir ao estado 184
+
+
+Estado 181
+
+   52 control_block: WHILE '(' exp ')' BEGIN_BLOCK commands END_BLOCK •
+
+    $padrão  reduzir usando a regra 52 (control_block)
+
+
+Estado 182
+
+   53 loop_block: FOR '(' initialization ';' exp ';' assign • ')' BEGIN_BLOCK commands END_BLOCK
+
+    ')'  deslocar, e ir ao estado 185
+
+
+Estado 183
+
+   54 loop_block: FOR '(' assign ';' exp ';' assign • ')' BEGIN_BLOCK commands END_BLOCK
+
+    ')'  deslocar, e ir ao estado 186
+
+
+Estado 184
+
+   50 control_block: IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK •
+   51              | IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK • ELSE BEGIN_BLOCK commands END_BLOCK
+
+    ELSE  deslocar, e ir ao estado 187
+
+    $padrão  reduzir usando a regra 50 (control_block)
+
+
+Estado 185
+
+   53 loop_block: FOR '(' initialization ';' exp ';' assign ')' • BEGIN_BLOCK commands END_BLOCK
+
+    BEGIN_BLOCK  deslocar, e ir ao estado 188
+
+
+Estado 186
+
+   54 loop_block: FOR '(' assign ';' exp ';' assign ')' • BEGIN_BLOCK commands END_BLOCK
+
+    BEGIN_BLOCK  deslocar, e ir ao estado 189
+
+
+Estado 187
+
+   51 control_block: IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK ELSE • BEGIN_BLOCK commands END_BLOCK
+
+    BEGIN_BLOCK  deslocar, e ir ao estado 190
+
+
+Estado 188
+
+   53 loop_block: FOR '(' initialization ';' exp ';' assign ')' BEGIN_BLOCK • commands END_BLOCK
+
+    ID        deslocar, e ir ao estado 105
+    OPC       deslocar, e ir ao estado 106
+    ENUM      deslocar, e ir ao estado 1
+    STRUCT    deslocar, e ir ao estado 2
+    VAR       deslocar, e ir ao estado 107
+    BREAK     deslocar, e ir ao estado 108
+    RETURN    deslocar, e ir ao estado 109
+    CONTINUE  deslocar, e ir ao estado 110
+    INPUT     deslocar, e ir ao estado 111
+    OUTPUT    deslocar, e ir ao estado 112
+    WHILE     deslocar, e ir ao estado 113
+    FOR       deslocar, e ir ao estado 114
+    TYPEDEF   deslocar, e ir ao estado 4
+    IF        deslocar, e ir ao estado 115
+
+    $padrão  reduzir usando a regra 26 (commands)
+
+    declaration     ir ao estado 116
+    initialization  ir ao estado 117
+    func_proc_call  ir ao estado 118
+    commands        ir ao estado 191
+    command         ir ao estado 120
+    user_def        ir ao estado 8
+    type_def        ir ao estado 9
+    assign          ir ao estado 121
+    control_block   ir ao estado 122
+    loop_block      ir ao estado 123
+    var             ir ao estado 124
+
+
+Estado 189
+
+   54 loop_block: FOR '(' assign ';' exp ';' assign ')' BEGIN_BLOCK • commands END_BLOCK
+
+    ID        deslocar, e ir ao estado 105
+    OPC       deslocar, e ir ao estado 106
+    ENUM      deslocar, e ir ao estado 1
+    STRUCT    deslocar, e ir ao estado 2
+    VAR       deslocar, e ir ao estado 107
+    BREAK     deslocar, e ir ao estado 108
+    RETURN    deslocar, e ir ao estado 109
+    CONTINUE  deslocar, e ir ao estado 110
+    INPUT     deslocar, e ir ao estado 111
+    OUTPUT    deslocar, e ir ao estado 112
+    WHILE     deslocar, e ir ao estado 113
+    FOR       deslocar, e ir ao estado 114
+    TYPEDEF   deslocar, e ir ao estado 4
+    IF        deslocar, e ir ao estado 115
+
+    $padrão  reduzir usando a regra 26 (commands)
+
+    declaration     ir ao estado 116
+    initialization  ir ao estado 117
+    func_proc_call  ir ao estado 118
+    commands        ir ao estado 192
+    command         ir ao estado 120
+    user_def        ir ao estado 8
+    type_def        ir ao estado 9
+    assign          ir ao estado 121
+    control_block   ir ao estado 122
+    loop_block      ir ao estado 123
+    var             ir ao estado 124
+
+
+Estado 190
+
+   51 control_block: IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK ELSE BEGIN_BLOCK • commands END_BLOCK
+
+    ID        deslocar, e ir ao estado 105
+    OPC       deslocar, e ir ao estado 106
+    ENUM      deslocar, e ir ao estado 1
+    STRUCT    deslocar, e ir ao estado 2
+    VAR       deslocar, e ir ao estado 107
+    BREAK     deslocar, e ir ao estado 108
+    RETURN    deslocar, e ir ao estado 109
+    CONTINUE  deslocar, e ir ao estado 110
+    INPUT     deslocar, e ir ao estado 111
+    OUTPUT    deslocar, e ir ao estado 112
+    WHILE     deslocar, e ir ao estado 113
+    FOR       deslocar, e ir ao estado 114
+    TYPEDEF   deslocar, e ir ao estado 4
+    IF        deslocar, e ir ao estado 115
+
+    $padrão  reduzir usando a regra 26 (commands)
+
+    declaration     ir ao estado 116
+    initialization  ir ao estado 117
+    func_proc_call  ir ao estado 118
+    commands        ir ao estado 193
+    command         ir ao estado 120
+    user_def        ir ao estado 8
+    type_def        ir ao estado 9
+    assign          ir ao estado 121
+    control_block   ir ao estado 122
+    loop_block      ir ao estado 123
+    var             ir ao estado 124
+
+
+Estado 191
+
+   53 loop_block: FOR '(' initialization ';' exp ';' assign ')' BEGIN_BLOCK commands • END_BLOCK
+
+    END_BLOCK  deslocar, e ir ao estado 194
+
+
+Estado 192
+
+   54 loop_block: FOR '(' assign ';' exp ';' assign ')' BEGIN_BLOCK commands • END_BLOCK
+
+    END_BLOCK  deslocar, e ir ao estado 195
+
+
+Estado 193
+
+   51 control_block: IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK ELSE BEGIN_BLOCK commands • END_BLOCK
+
+    END_BLOCK  deslocar, e ir ao estado 196
+
+
+Estado 194
+
+   53 loop_block: FOR '(' initialization ';' exp ';' assign ')' BEGIN_BLOCK commands END_BLOCK •
+
+    $padrão  reduzir usando a regra 53 (loop_block)
+
+
+Estado 195
+
+   54 loop_block: FOR '(' assign ';' exp ';' assign ')' BEGIN_BLOCK commands END_BLOCK •
+
+    $padrão  reduzir usando a regra 54 (loop_block)
+
+
+Estado 196
+
+   51 control_block: IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK ELSE BEGIN_BLOCK commands END_BLOCK •
+
+    $padrão  reduzir usando a regra 51 (control_block)

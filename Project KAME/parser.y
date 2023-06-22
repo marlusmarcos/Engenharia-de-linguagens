@@ -1,10 +1,14 @@
 %{
 #include <stdio.h>
+#include "./lib/record.h"
 
 int yylex(void);
 int yyerror(char *s);
 extern int yylineno;
 extern char * yytext;
+extern FILE * yyin, * yyout;
+
+char * cat(char *, char *, char *, char *, char *);
 
 %}
 
@@ -13,6 +17,7 @@ extern char * yytext;
 	float	fValue;		/* float value */	 
 	char 	cValue; 	/* char value */
 	char 	*sValue;  	/* string value */
+	struct record * rec;
 };
 
 %token <sValue> ID
@@ -27,21 +32,44 @@ extern char * yytext;
 %token <sValue> COMMENT
 %token ENUM STRUCT VAR BREAK RETURN CONTINUE INPUT OUTPUT FUNCTION PROC WHILE FOR TYPEDEF TRUE FALSE BEGIN_BLOCK END_BLOCK IF ELSE ASSIGN MAIN_BLOCK NOT LENGTH
 
+%type <rec> main_seq command commands id_list declaration_seq subprograms
+
 %start prog
 
 %%
-prog : declaration_seq  subprograms main_seq;
+prog : declaration_seq subprograms main_seq {
+												fprintf(yyout, "%s\n%s\n%s", $1->code, $2->code, $3->code);
+												freeRecord($1);
+												freeRecord($2);
+												freeRecord($3);
+											}
+	 ;
 
 
-declaration_seq : declaration ';' declaration_seq		{}
-				| ;
+declaration_seq : declaration ';' declaration_seq		{
+															char *s = cat($1)
+														}
+				|                                       {
+															$$ = createRecord("", "");
+														}
+				;
 
 declaration : VAR id_list ':' TYPE					{}
 			| user_def								{}
 			| type_def								{};
-id_list : ID										{}
+
+id_list : ID										{
+														$$ = createRecord($1, "");
+														free($1);
+													}
 		| ID array_dim								{}
-		| ID ',' id_list							{}
+		| ID ',' id_list							{
+														char *s = cat($1, ", ", $3->code, "","");
+														free($1);
+														freeRecord($3);
+														$$ = createRecord(s, "");
+														free(s);
+													}
 		| ID array_dim ',' id_list					{};
 initialization : VAR id_list ':' TYPE ASSIGN exp	{};
 
@@ -52,8 +80,8 @@ subprogram : function								{}
 			| proc 									{};
 
 
-function : FUNCTION ID '(' paramsdef ')' ':' TYPE BEGIN_BLOCK commands END_BLOCK	{};
-proc : PROC ID '(' paramsdef ')' BEGIN_BLOCK commands END_BLOCK						{};
+function : FUNCTION ID '(' paramsdef ')' ':' TYPE BEGIN_BLOCK /*{pilhaEscopo.push($2)}*/ commands END_BLOCK	/*{pilhaEscopo.pop()}*/{};
+proc : PROC ID '(' paramsdef ')' BEGIN_BLOCK /*{pilhaEscopo.push($2)}*/ commands END_BLOCK	/*{pilhaEscopo.pop()}*/					{};
 paramsdef : var ':' TYPE															{}
 			| var ':' TYPE ',' paramsdef											{}
 			| ;
@@ -63,8 +91,16 @@ params : exp							{}
 func_proc_call : ID '(' params ')'		{};
 
 
-commands : command ';' commands		{}
-			| ;
+commands : command ';' commands		{
+										char *s = cat($1->code, "\n", $3->code, "", "");
+										freeRecord($1);
+										freeRecord($3);
+										$$ = createRecord(s, "");
+										free(s);
+									}
+			| 						{
+										$$ = createRecord("", "");
+									};
 command : declaration				{}
 		| assign					{}
 		| initialization			{}
@@ -127,15 +163,70 @@ array_dim : '[' ']'						{}
 			| '[' exp ']'				{}
 			| '[' exp ']' array_dim		{};
 
-main_seq : MAIN_BLOCK '(' ')' BEGIN_BLOCK commands END_BLOCK ';'		{}
-		| ;
+main_seq : MAIN_BLOCK '(' ')' BEGIN_BLOCK commands END_BLOCK ';'		{
+																			char *s = cat("int main() {\n}", $5->code, "}", "", "");
+																			freeRecord($5);
+																			$$ = createRecord(s, "");
+																			free(s);
+																		}
+		| {
+			$$ = createRecord("", "");
+		  };
 %%
 
+/*
 int main (void) {
 	return yyparse ( );
+}
+*/
+
+/*
+int yyerror (char *msg) {
+	fprintf (stderr, "%d: %s at '%s'\n", yylineno, msg, yytext);
+	return 0;
+}
+*/
+
+
+/*Funções Auxiliares*/
+
+int main (int argc, char ** argv) {
+ 	int codigo;
+
+    if (argc != 3) {
+       printf("Usage: $./compiler input.txt output.txt\nClosing application...\n");
+       exit(0);
+    }
+    
+    yyin = fopen(argv[1], "r");
+    yyout = fopen(argv[2], "w");
+
+    codigo = yyparse();
+
+    fclose(yyin);
+    fclose(yyout);
+
+	return codigo;
 }
 
 int yyerror (char *msg) {
 	fprintf (stderr, "%d: %s at '%s'\n", yylineno, msg, yytext);
 	return 0;
+}
+
+char * cat(char * s1, char * s2, char * s3, char * s4, char * s5){
+  int tam;
+  char * output;
+
+  tam = strlen(s1) + strlen(s2) + strlen(s3) + strlen(s4) + strlen(s5)+ 1;
+  output = (char *) malloc(sizeof(char) * tam);
+  
+  if (!output){
+    printf("Allocation problem. Closing application...\n");
+    exit(0);
+  }
+  
+  sprintf(output, "%s%s%s%s%s", s1, s2, s3, s4, s5);
+  
+  return output;
 }
