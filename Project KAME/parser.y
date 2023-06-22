@@ -32,7 +32,7 @@ char * cat(char *, char *, char *, char *, char *);
 %token <sValue> COMMENT
 %token ENUM STRUCT VAR BREAK RETURN CONTINUE INPUT OUTPUT FUNCTION PROC WHILE FOR TYPEDEF TRUE FALSE BEGIN_BLOCK END_BLOCK IF ELSE ASSIGN MAIN_BLOCK NOT LENGTH
 
-%type <rec> main_seq command commands id_list declaration_seq subprograms
+%type <rec> main_seq command commands id_list declaration_seq subprograms declaration subprogram
 
 %start prog
 
@@ -47,7 +47,11 @@ prog : declaration_seq subprograms main_seq {
 
 
 declaration_seq : declaration ';' declaration_seq		{
-															char *s = cat($1)
+															char *s = cat($1, ", ", $3->code, "","");
+															free($1);
+															freeRecord($3);
+															$$ = createRecord(s, "");
+															free(s);
 														}
 				|                                       {
 															$$ = createRecord("", "");
@@ -74,8 +78,17 @@ id_list : ID										{
 initialization : VAR id_list ':' TYPE ASSIGN exp	{};
 
 
-subprograms : subprogram ';' subprograms			{}
-			| ;
+subprograms : subprogram ';' subprograms			{
+														char *s = cat($1->code, "\n", $3->code, "","");
+														freeRecord($1);
+														freeRecord($3);
+														$$ = createRecord(s, "");
+														free(s);
+													}
+			| 										{
+														$$ = createRecord("", "");
+													}
+			;
 subprogram : function								{} 
 			| proc 									{};
 
@@ -164,7 +177,7 @@ array_dim : '[' ']'						{}
 			| '[' exp ']' array_dim		{};
 
 main_seq : MAIN_BLOCK '(' ')' BEGIN_BLOCK commands END_BLOCK ';'		{
-																			char *s = cat("int main() {\n}", $5->code, "}", "", "");
+																			char *s = cat("int main() {\n", $5->code, "}", "", "");
 																			freeRecord($5);
 																			$$ = createRecord(s, "");
 																			free(s);

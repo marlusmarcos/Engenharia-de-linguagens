@@ -169,7 +169,7 @@ Não terminais com as regras onde eles aparecem
     declaration_seq <rec> (46)
         à esquerda: 2 3
         à direita: 1 2 39
-    declaration (47)
+    declaration <rec> (47)
         à esquerda: 4 5 6
         à direita: 2 27
     id_list <rec> (48)
@@ -181,7 +181,7 @@ Não terminais com as regras onde eles aparecem
     subprograms <rec> (50)
         à esquerda: 12 13
         à direita: 1 12
-    subprogram (51)
+    subprogram <rec> (51)
         à esquerda: 14 15
         à direita: 12
     function (52)
