@@ -1,4 +1,6 @@
 
 main(){
-	
+	var teste : int;
+    var teste2, a, b, c, d : float;
+
 };

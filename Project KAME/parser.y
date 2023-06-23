@@ -32,63 +32,100 @@ char * cat(char *, char *, char *, char *, char *);
 %token <sValue> COMMENT
 %token ENUM STRUCT VAR BREAK RETURN CONTINUE INPUT OUTPUT FUNCTION PROC WHILE FOR TYPEDEF TRUE FALSE BEGIN_BLOCK END_BLOCK IF ELSE ASSIGN MAIN_BLOCK NOT LENGTH
 
-%type <rec> main_seq command commands id_list declaration_seq subprograms declaration subprogram
+%type <rec> main_seq command commands id_list declaration_seq subprograms declaration subprogram initialization exp term factor var
 
 %start prog
 
 %%
-prog : declaration_seq subprograms main_seq {
-												fprintf(yyout, "%s\n%s\n%s", $1->code, $2->code, $3->code);
-												freeRecord($1);
-												freeRecord($2);
-												freeRecord($3);
-											}
-	 ;
+prog : declaration_seq subprograms main_seq 
+{
+	fprintf(yyout, "%s\n%s\n%s", $1->code, $2->code, $3->code);
+	freeRecord($1);
+	freeRecord($2);
+	freeRecord($3);
+};
 
 
-declaration_seq : declaration ';' declaration_seq		{
-															char *s = cat($1, ", ", $3->code, "","");
-															free($1);
-															freeRecord($3);
-															$$ = createRecord(s, "");
-															free(s);
-														}
-				|                                       {
-															$$ = createRecord("", "");
-														}
-				;
-
-declaration : VAR id_list ':' TYPE					{}
-			| user_def								{}
-			| type_def								{};
-
-id_list : ID										{
-														$$ = createRecord($1, "");
-														free($1);
-													}
-		| ID array_dim								{}
-		| ID ',' id_list							{
-														char *s = cat($1, ", ", $3->code, "","");
-														free($1);
-														freeRecord($3);
-														$$ = createRecord(s, "");
-														free(s);
-													}
-		| ID array_dim ',' id_list					{};
-initialization : VAR id_list ':' TYPE ASSIGN exp	{};
+declaration_seq : declaration ';' declaration_seq 
+{
+	char *s = cat($1, ", ", $3->code, "","");
+	free($1);
+	freeRecord($3);
+	$$ = createRecord(s, "");
+	free(s);
+}
+				|                                       
+{
+	$$ = createRecord("", "");
+};
 
 
-subprograms : subprogram ';' subprograms			{
-														char *s = cat($1->code, "\n", $3->code, "","");
-														freeRecord($1);
-														freeRecord($3);
-														$$ = createRecord(s, "");
-														free(s);
-													}
-			| 										{
-														$$ = createRecord("", "");
-													}
-			;
+declaration : VAR id_list ':' TYPE					
+{
+	char *s = cat($4, " ", $2->code, ";", "");
+	free($4);
+	freeRecord($2);
+	$$ = createRecord(s, "");
+	free(s);
+}
+			| user_def								
+{
+
+}
+			| type_def								
+{
+
+};
+
+
+id_list : ID										
+{
+	$$ = createRecord($1, "");
+	free($1);
+}
+		| ID array_dim								
+{
+
+}
+		| ID ',' id_list							
+{
+	char *s = cat($1, ", ", $3->code, "","");
+	free($1);
+	freeRecord($3);
+	$$ = createRecord(s, "");
+	free(s);
+}
+		| ID array_dim ',' id_list					
+{
+
+};
+
+
+initialization : VAR id_list ':' TYPE ASSIGN exp	
+{
+	char *s = cat($4, " ", $2->code, " = ", $6->code);
+	freeRecord($2);
+	freeRecord($6);
+	free($4);
+	$$ = createRecord(s, "");
+	free(s);
+};
+
+
+subprograms : subprogram ';' subprograms			
+{
+	char *s = cat($1->code, "\n", $3->code, "","");
+	freeRecord($1);
+	freeRecord($3);
+	$$ = createRecord(s, "");
+	free(s);
+}
+		| 										
+{
+	$$ = createRecord("", "");
+};
+
+
 subprogram : function								{} 
 			| proc 									{};
 
@@ -104,16 +141,20 @@ params : exp							{}
 func_proc_call : ID '(' params ')'		{};
 
 
-commands : command ';' commands		{
-										char *s = cat($1->code, "\n", $3->code, "", "");
-										freeRecord($1);
-										freeRecord($3);
-										$$ = createRecord(s, "");
-										free(s);
-									}
-			| 						{
-										$$ = createRecord("", "");
-									};
+commands : command ';' commands		
+{
+	char *s = cat($1->code, "\n", $3->code, "", "");
+	freeRecord($1);
+	freeRecord($3);
+	$$ = createRecord(s, "");
+	free(s);
+}
+		| 						
+{
+	$$ = createRecord("", "");
+};
+
+
 command : declaration				{}
 		| assign					{}
 		| initialization			{}
@@ -142,28 +183,97 @@ assign : OPC ID												{}
 		| var OPA exp										{};
 
 		
-control_block : IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK				{}
+control_block : IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK				
+{
+
+}
 				| IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK	
-					ELSE BEGIN_BLOCK commands END_BLOCK						{}
-				| WHILE '(' exp ')' BEGIN_BLOCK commands END_BLOCK			{};
+					ELSE BEGIN_BLOCK commands END_BLOCK			
+{
+
+}
+				| WHILE '(' exp ')' BEGIN_BLOCK commands END_BLOCK			
+{
+	
+};
+
+
 loop_block : FOR '(' initialization ';' exp ';' assign ')'
-				BEGIN_BLOCK commands END_BLOCK								{}
+				BEGIN_BLOCK commands END_BLOCK	
+{
+	
+}
 			| FOR '(' assign ';' exp ';' assign ')'
-				BEGIN_BLOCK commands END_BLOCK								{};
+				BEGIN_BLOCK commands END_BLOCK	
+{
+
+};
 
 
-exp : term								{}
-	| exp WEAK_OP term					{};
-term : factor							{}
-		| term STRONG_OP factor			{};
-factor : var							{}
-		| STR_LITERAL					{}
-		| NUMBER						{}
-		| REAL							{}
-		| func_proc_call				{}
-		| '(' exp ')'					{}
-		| WEAK_OP factor				{}
-		| TRUE							{}
+exp : term								
+{
+	$$ = createRecord($1, "");
+	free($1);
+}
+	| exp WEAK_OP term					
+{
+	char *s = cat($1->code, $2, $3->code, "", "");
+	freeRecord($1);
+	freeRecord($3);
+	free($2);
+	$$ = createRecord(s, "");
+	free(s);
+};
+
+
+term : factor							
+{
+	$$ = createRecord($1, "");
+	free($1);
+}
+		| term STRONG_OP factor			
+{
+	char *s = cat($1->code, $2, $3->code, "", "");
+	freeRecord($1);
+	freeRecord($3);
+	free($2);
+	$$ = createRecord(s, "");
+	free(s);
+};
+
+
+factor : var							
+{
+	
+}
+		| STR_LITERAL					
+{
+	
+}
+		| NUMBER						
+{
+	
+}
+		| REAL							
+{
+	
+}
+		| func_proc_call				
+{
+
+}
+		| '(' exp ')'					
+{
+
+}
+		| WEAK_OP factor				
+{
+
+}
+		| TRUE							
+{
+	
+}
 		| FALSE							{}
 		| NOT factor					{}
 		| LENGTH '(' factor ')'			{};
