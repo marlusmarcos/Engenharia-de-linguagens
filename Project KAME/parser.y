@@ -1,5 +1,7 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "./lib/record.h"
 
 int yylex(void);
@@ -37,7 +39,7 @@ char * cat(char *, char *, char *, char *, char *);
 %start prog
 
 %%
-prog : declaration_seq subprograms main_seq 
+prog : declaration_seq subprograms main_seq
 {
 	fprintf(yyout, "%s\n%s\n%s", $1->code, $2->code, $3->code);
 	freeRecord($1);
@@ -48,7 +50,7 @@ prog : declaration_seq subprograms main_seq
 
 declaration_seq : declaration ';' declaration_seq 
 {
-	char *s = cat($1, ", ", $3->code, "","");
+	char *s = cat($1->code, ", ", $3->code, "","");
 	free($1);
 	freeRecord($3);
 	$$ = createRecord(s, "");
@@ -212,7 +214,7 @@ loop_block : FOR '(' initialization ';' exp ';' assign ')'
 
 exp : term								
 {
-	$$ = createRecord($1, "");
+	$$ = createRecord($1->code, "");
 	free($1);
 }
 	| exp WEAK_OP term					
@@ -228,7 +230,7 @@ exp : term
 
 term : factor							
 {
-	$$ = createRecord($1, "");
+	$$ = createRecord($1->code, "");
 	free($1);
 }
 		| term STRONG_OP factor			
