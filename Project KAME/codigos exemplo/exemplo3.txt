@@ -1,0 +1,11 @@
+//Exemplo para o teste de tradução dos Loops.
+
+
+main(){
+
+    var soma: int = 0;
+
+	for(var i: int = 0; i < 10; i++){
+		soma += i;
+	};
+};

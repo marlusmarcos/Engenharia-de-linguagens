@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "./lib/record.h"
+#include "./lib/traducao_aux.h"
 
 int yylex(void);
 int yyerror(char *s);
@@ -364,6 +365,7 @@ control_block : IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK
 loop_block : FOR '(' initialization ';' exp ';' assign ')'
 				BEGIN_BLOCK commands END_BLOCK	
 {
+	/*
 	char *s1 = cat("for (", $3->code, "; ", $5->code, "; ");
 	char *s2 = cat(s1, $7->code, ") {\n", $10->code, "}");
 	$$ = createRecord(s2, "");
@@ -373,6 +375,15 @@ loop_block : FOR '(' initialization ';' exp ';' assign ')'
 	freeRecord($10);
 	free(s1);
 	free(s2);
+	*/
+	char *s = forToGoTo($3->code, $5->code, $7->code, $10->code);
+	$$ = createRecord(s, "");
+	freeRecord($3);
+	freeRecord($5);
+	freeRecord($7);
+	freeRecord($10);
+	free(s);
+
 }
 			| FOR '(' assign ';' exp ';' assign ')'
 				BEGIN_BLOCK commands END_BLOCK	
@@ -523,21 +534,6 @@ main_seq : MAIN_BLOCK '(' ')' BEGIN_BLOCK commands END_BLOCK ';'		{
 		  };
 %%
 
-/*
-int main (void) {
-	return yyparse ( );
-}
-*/
-
-/*
-int yyerror (char *msg) {
-	fprintf (stderr, "%d: %s at '%s'\n", yylineno, msg, yytext);
-	return 0;
-}
-*/
-
-
-/*Funções Auxiliares*/
 
 int main (int argc, char ** argv) {
  	int codigo;
