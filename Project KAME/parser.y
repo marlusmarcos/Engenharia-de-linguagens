@@ -388,6 +388,7 @@ loop_block : FOR '(' initialization ';' exp ';' assign ')'
 			| FOR '(' assign ';' exp ';' assign ')'
 				BEGIN_BLOCK commands END_BLOCK	
 {
+	/*
 	char *s1 = cat("for (", $3->code, "; ", $5->code, "; ");
 	char *s2 = cat(s1, $7->code, ") {\n", $10->code, "}");
 	$$ = createRecord(s2, "");
@@ -397,6 +398,14 @@ loop_block : FOR '(' initialization ';' exp ';' assign ')'
 	freeRecord($10);
 	free(s1);
 	free(s2);
+	*/
+	char *s = forToGoTo($3->code, $5->code, $7->code, $10->code);
+	$$ = createRecord(s, "");
+	freeRecord($3);
+	freeRecord($5);
+	freeRecord($7);
+	freeRecord($10);
+	free(s);
 };
 
 

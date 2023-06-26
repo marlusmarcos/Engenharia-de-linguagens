@@ -8,4 +8,17 @@ main(){
 	for(var i: int = 0; i < 10; i++){
 		soma += i;
 	};
+
+    var j: int;
+    var multi: int = 1;
+
+    for(j = 0; j < 5; j++) {
+        multi *= j;
+    };
+
+    var k: int = 3;
+    
+    for(k = 3; k > -5; k--) {
+
+    };
 };
