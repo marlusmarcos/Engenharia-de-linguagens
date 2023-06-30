@@ -1,0 +1,15 @@
+//Exemplo para teste de IF ELSE 
+
+main(){
+
+    var idade: int = 22;
+
+    if(idade >= 18) {
+
+    } else {
+
+    };
+
+};
+
+
