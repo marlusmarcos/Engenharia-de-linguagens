@@ -1,4 +1,5 @@
-y.tab.h
-y.tab.c
-lex.yy.c
-comp
+Project KAME/y.tab.h
+Project KAME/y.tab.c
+Project KAME/lex.yy.c
+Project KAME/y.output
+Project KAME/compiler

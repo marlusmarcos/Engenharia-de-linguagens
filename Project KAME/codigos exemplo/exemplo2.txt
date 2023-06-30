@@ -1,0 +1,11 @@
+/* 
+ * Exemplo para o teste de das declarações.
+ */
+
+main(){
+	var inteiro : int;
+    var numeroReal : float;
+    
+    var teste2, a, b, c, d : float = 2;
+
+};
