@@ -1,7 +1,7 @@
 all: compilador
 
 compilador: lex.yy.c y.tab.c 
-	gcc lex.yy.c y.tab.c ./lib/record.c ./lib/traducao_aux.c ./lib/semantics.c -o compiler
+	gcc lex.yy.c y.tab.c ./lib/record.c ./lib/traducao_aux.c ./lib/semantics.c ./lib/stack.c ./lib/symbol_table.c -o compiler
 
 lex.yy.c: lexer.l
 	lex lexer.l
