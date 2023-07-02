@@ -5,12 +5,18 @@
 #include "./lib/record.h"
 #include "./lib/traducao_aux.h"
 #include "./lib/semantics.h"
+#include "./lib/symbol_table.h"
+#include "./lib/stack.h"
 
 int yylex(void);
 int yyerror(char *s);
 extern int yylineno;
 extern char * yytext;
 extern FILE * yyin, * yyout;
+
+SymbolTable *variablesTable;
+SymbolTable *functionsTable;
+stack *scopeStack;
 
 %}
 
@@ -39,12 +45,12 @@ extern FILE * yyin, * yyout;
 %start prog
 
 %%
-prog : declaration_seq subprograms main_seq
+prog : {pushS(scopeStack, "global", "");} declaration_seq subprograms main_seq {popS(scopeStack);}
 {
-	fprintf(yyout, "%s\n%s\n%s", $1->code, $2->code, $3->code);
-	freeRecord($1);
+	fprintf(yyout, "%s\n%s\n%s", $2->code, $3->code, $4->code); //$1 virou $2 e incrementou 1 em todos.
 	freeRecord($2);
 	freeRecord($3);
+	freeRecord($4);
 };
 
 
@@ -74,10 +80,14 @@ subprogram : function								{ subprog1(&$$, &$1); }
 			| proc 									{ subprog1(&$$, &$1); };
 
 
-function : FUNCTION ID '(' paramsdef ')' ':' TYPE BEGIN_BLOCK /*{pilhaEscopo.push($2)}*/ commands END_BLOCK	/*{pilhaEscopo.pop()}*/
-													{ func1(&$$, &$2, &$4, &$7, &$9); };
-proc : PROC ID '(' paramsdef ')' BEGIN_BLOCK /*{pilhaEscopo.push($2)}*/ commands END_BLOCK	/*{pilhaEscopo.pop()}*/
-													{ proc1(&$$, &$2, &$4, &$7); };
+function : FUNCTION ID '(' paramsdef ')' ':' TYPE BEGIN_BLOCK {pushS(scopeStack, $2, "");} commands END_BLOCK	{popS(scopeStack);}
+{ 
+	func1(&$$, &$2, &$4, &$7, &$10);  //Prestar atençaõ aqui, o $9 virou $10;
+};
+proc : PROC ID '(' paramsdef ')' BEGIN_BLOCK {pushS(scopeStack, $2, "");} commands END_BLOCK	{popS(scopeStack);}
+{ 
+	proc1(&$$, &$2, &$4, &$8); //Prestar atençaõ aqui, o $7 virou $8;
+}; 
 paramsdef : var ':' TYPE							{ pard1(&$$, &$1, &$3); }
 			| var ':' TYPE ',' paramsdef			{ pard2(&$$, &$1, &$3, &$5); }
 			| 										{ pard3(&$$); };
@@ -121,7 +131,10 @@ assign : OPC ID							{ asg1(&$$, &$1, &$2); }
 		| var OPA exp					{ asg4(&$$, &$1, &$2, &$3); };
 
 		
-control_block : IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK			{ ctrl_b1(&$$, &$3, &$6); }
+control_block : IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK			
+{ 
+	ctrl_b1(&$$, &$3, &$6); 
+}
 				| IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK	
 					ELSE BEGIN_BLOCK commands END_BLOCK					{ ctrl_b2(&$$, &$3, &$6, &$10); }
 				| WHILE '(' exp ')' BEGIN_BLOCK commands END_BLOCK		{ ctrl_b3(&$$, &$3, &$6); };
@@ -162,7 +175,10 @@ array_dim : '[' ']'						{ arrd1(&$$); }
 			| '[' exp ']' array_dim		{ arrd4(&$$, &$2, &$4); };
 
 
-main_seq : MAIN_BLOCK '(' ')' BEGIN_BLOCK commands END_BLOCK ';'	{ m1(&$$, &$5); }
+main_seq : MAIN_BLOCK '(' ')' BEGIN_BLOCK {pushS(scopeStack, "main", "");} commands END_BLOCK {popS(scopeStack);} ';'	
+{ 
+	m1(&$$, &$6); //$5 virou $6 
+}
 		| 															{ m2(&$$); };
 %%
 
@@ -178,10 +194,23 @@ int main (int argc, char ** argv) {
     yyin = fopen(argv[1], "r");
     yyout = fopen(argv[2], "w");
 
+	variablesTable = createSymbolTable(TABLE_SIZE);
+	functionsTable = createSymbolTable(TABLE_SIZE);
+	scopeStack = newStack();
+
     codigo = yyparse();
 
     fclose(yyin);
     fclose(yyout);
+
+	//Mostrar a tabela dde simbolos ao final, apenas para testes:
+	printf("*******************************\n");
+	printf("Mostrando tabela de variaveis: \n");
+	printTable(variablesTable);
+	printf("*******************************\n");
+	printf("Mostrando tabela de funcoes: \n");
+	printTable(functionsTable);
+	printf("*******************************\n");
 
 	return codigo;
 }

@@ -33,7 +33,7 @@ int isEmpty(struct stack *pt) {
 
 vatt *pushS(struct stack *pt, char *subp, char *type) {
  
-    //printf("Inserting %s\n", x.subp);
+    printf("Adicionando no escopo:  %s %s \n", subp, type);
  
     // adiciona um elemento e incrementa o índice do topo
     vatt *new_node;
@@ -63,7 +63,7 @@ vatt *popS(struct stack *pt){
     }
     vatt *tmp = peekS(pt);
 
-    //printf("Removing %s\n", tmp->subp);
+    printf("Removendo do escopo:  %s\n", tmp->subp);
 
     vatt *next_node = NULL;
 
