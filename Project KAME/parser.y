@@ -152,16 +152,24 @@ assign : OPC ID							{ asg1(&$$, &$1, &$2); }
 		| var OPA exp					{ asg4(&$$, &$1, &$2, &$3); };
 
 		
-control_block : IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK			{ ctrl_b1(&$$, &$3, &$6); }
-				| IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK	
-					ELSE BEGIN_BLOCK commands END_BLOCK					{ ctrl_b2(&$$, &$3, &$6, &$10); }
-				| WHILE '(' exp ')' BEGIN_BLOCK commands END_BLOCK		{ ctrl_b3(&$$, &$3, &$6); };
+control_block : IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK { ctrl_b1(&$$, &$3, &$6); } 
+				| IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK ELSE BEGIN_BLOCK commands END_BLOCK	{ ctrl_b2(&$$, &$3, &$6, &$10); }
+				| WHILE '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, "WHILE", "");} commands END_BLOCK {popS(scopeStack);}
+{ 
+	ctrl_b3(&$$, &$3, &$7); //$6 virou $7
+}; 
 
 
 loop_block : FOR '(' initialization ';' exp ';' assign ')'
-				BEGIN_BLOCK commands END_BLOCK							{ fr1(&$$, &$3, &$5, &$7, &$10); }
+				BEGIN_BLOCK {pushS(scopeStack, "FORINIT", "");} commands END_BLOCK {popS(scopeStack);}			
+{ 
+	fr1(&$$, &$3, &$5, &$7, &$11); //$10 virou $11
+} 
 			| FOR '(' assign ';' exp ';' assign ')'
-				BEGIN_BLOCK commands END_BLOCK							{ fr2(&$$, &$3, &$5, &$7, &$10); };
+				BEGIN_BLOCK {pushS(scopeStack, "FORASSING", "");} commands END_BLOCK {popS(scopeStack);}
+{ 
+	fr2(&$$, &$3, &$5, &$7, &$11); //$10 virou $11
+};
 
 
 exp : term							{ ex1(&$$, &$1); }
@@ -222,6 +230,7 @@ int main (int argc, char ** argv) {
     fclose(yyout);
 
 	//Mostrar a tabela dde simbolos ao final, apenas para testes:
+	/*
 	printf("*******************************\n");
 	printf("Mostrando tabela de variaveis: \n");
 	printTable(variablesTable);
@@ -229,6 +238,7 @@ int main (int argc, char ** argv) {
 	printf("Mostrando tabela de funcoes: \n");
 	printTable(functionsTable);
 	printf("*******************************\n");
+	*/
 
 	return codigo;
 }
