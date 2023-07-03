@@ -1,6 +1,6 @@
 #include "stack.h"
 #include <stdlib.h>
-//#include <stdio.h>
+#include <stdio.h>
 
 // https://www.techiedelight.com/pt/stack-implementation/
 
