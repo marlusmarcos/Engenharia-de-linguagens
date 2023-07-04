@@ -61,8 +61,13 @@ declaration_seq : declaration ';' declaration_seq	{ dec_seq1(&$$, &$1, &$3); }
 
 declaration : VAR id_list ':' TYPE					
 {
+	// Separando o id da variável dos []
+	char strToSlice[100];
+	strcpy(strToSlice, $2->code);
+	char* tokenSliced = strtok(strToSlice, "[");
+
 	vatt *tmp = peekS(scopeStack);
-	insert(variablesTable, cat(tmp->subp, "#", $2->code,"",""), $2->code, $4);
+	insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $4);
 	dec1(&$$, &$2, &$4);
 }
 			| user_def								{ dec2(&$$, &$1); }
@@ -100,15 +105,23 @@ proc : PROC ID '(' paramsdef ')' BEGIN_BLOCK {pushS(scopeStack, $2, "");} comman
 	proc1(&$$, &$2, &$4, &$8); //Prestar atençaõ aqui, o $7 virou $8;
 }; 
 paramsdef : var ':' TYPE							
-{ 
+{
+	char strToSlice[100];
+	strcpy(strToSlice, $1->code);
+	char* tokenSliced = strtok(strToSlice, "[");
+
 	vatt *tmp = peekS(scopeStack);
-	insert(variablesTable, cat(tmp->subp, "#", $1->code,"",""), $1->code, $3);
+	insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $3);
 	pard1(&$$, &$1, &$3); 
 }
 			| var ':' TYPE ',' paramsdef			
 {
+	char strToSlice[100];
+	strcpy(strToSlice, $1->code);
+	char* tokenSliced = strtok(strToSlice, "[");
+
 	vatt *tmp = peekS(scopeStack);
-	insert(variablesTable, cat(tmp->subp, "#", $1->code,"",""), $1->code, $3);
+	insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $3);
 	pard2(&$$, &$1, &$3, &$5);
 }
 			| 										{ pard3(&$$); };
@@ -205,7 +218,27 @@ factor : var							{ fac1(&$$, &$1); }
 		| NOT factor					{ fac10(&$$, &$2); }
 		| LENGTH '(' factor ')'			{ fac11(&$$, &$3); };
 
-var : ID								{ v1(&$$, &$1); }
+var : ID								
+		{
+			int stop = 0;
+			int top = scopeStack->top;
+			vatt *stmp = peekS(scopeStack);
+			while(!stop){
+				if(lookup(variablesTable, cat(stmp->subp,"#",$1,"",""))){
+					stop = 1;
+				} else{
+					if(top>0){
+						top--;
+						stmp = stmp->next;
+					} else {
+						yyerror(cat($1," undefined variable","","",""));
+						stop = 1;
+					}
+				}
+			};
+
+			v1(&$$, &$1);
+		}
 	| ID array_dim						{ v2(&$$, &$1, &$2); }
 	| ID '.' var						{ v3(&$$, &$1, &$3); };
 array_dim : '[' ']'						{ arrd1(&$$); }

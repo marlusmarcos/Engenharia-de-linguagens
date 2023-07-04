@@ -1,7 +1,9 @@
 var arrTest[3]: int;
 
 function partition(arr[]: int, low: int, high: int) :int {
-	var i, j, pivot :int;
+	var i :int;
+	var j: int;
+	var pivot :int;
 	pivot = arr[high];
 	i = low - 1;
 	
