@@ -41,7 +41,7 @@ stack *scopeStack;
 %token ENUM STRUCT VAR BREAK RETURN CONTINUE INPUT OUTPUT FUNCTION PROC WHILE FOR TYPEDEF TRUE FALSE BEGIN_BLOCK END_BLOCK IF ELSE ASSIGN MAIN_BLOCK NOT LENGTH
 
 %type <rec> main_seq command commands id_list declaration_seq subprograms declaration subprogram initialization exp term factor var
-%type <rec> user_def type_def array_dim function proc paramsdef params func_proc_call assign control_block loop_block enum_init
+%type <rec> user_def type_def array_dim function proc paramsdef params func_proc_call assign control_block loop_block enum_init else_block
 %start prog
 
 %%
@@ -152,24 +152,37 @@ assign : OPC ID							{ asg1(&$$, &$1, &$2); }
 		| var OPA exp					{ asg4(&$$, &$1, &$2, &$3); };
 
 		
-control_block : IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK { ctrl_b1(&$$, &$3, &$6); } 
-				| IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK ELSE BEGIN_BLOCK commands END_BLOCK	{ ctrl_b2(&$$, &$3, &$6, &$10); }
-				| WHILE '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, "WHILE", "");} commands END_BLOCK {popS(scopeStack);}
+control_block : IF '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, "IF", "");} commands END_BLOCK else_block {popS(scopeStack);} //Aqui talvez precise mudar e guardar o id do if.
+{
+	ctrl_b1(&$$, &$3, &$7, &$9, "EXIT_IDIF"); //nessa parte, irei passar o id do if como parametro para a tradução.
+};
+				
+
+else_block : 
 { 
-	ctrl_b3(&$$, &$3, &$7); //$6 virou $7
-}; 
+	empty_else(&$$, "EXIT_IDIF");
+}
+			| ELSE BEGIN_BLOCK {pushS(scopeStack, "ELSE", "");} commands END_BLOCK {popS(scopeStack);} 
+{
+	else_b(&$$, &$4, "EXIT_IDIF");
+
+};
 
 
 loop_block : FOR '(' initialization ';' exp ';' assign ')'
 				BEGIN_BLOCK {pushS(scopeStack, "FORINIT", "");} commands END_BLOCK {popS(scopeStack);}			
-{ 
+{
 	fr1(&$$, &$3, &$5, &$7, &$11); //$10 virou $11
-} 
+}
 			| FOR '(' assign ';' exp ';' assign ')'
 				BEGIN_BLOCK {pushS(scopeStack, "FORASSING", "");} commands END_BLOCK {popS(scopeStack);}
 { 
 	fr2(&$$, &$3, &$5, &$7, &$11); //$10 virou $11
-};
+}
+			| WHILE '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, "WHILE", "");} commands END_BLOCK {popS(scopeStack);}
+{ 
+	ctrl_b3(&$$, &$3, &$7); //$6 virou $7
+}; 
 
 
 exp : term							{ ex1(&$$, &$1); }

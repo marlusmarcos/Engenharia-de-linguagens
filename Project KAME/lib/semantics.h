@@ -53,7 +53,8 @@ void asg1(record **, char **, char **);
 void asg2(record **, char **, char **);
 void asg3(record **, record **, record **);
 void asg4(record **, record **, char **, record **);
-void ctrl_b1(record **, record **, record **);
+void ctrl_b1(record **, record **, record **, record **, char *);
+void else_b(record **, record **, char *);
 void ctrl_b2(record **, record **, record **, record **);
 void ctrl_b3(record **, record **, record **);
 
@@ -84,5 +85,7 @@ void arrd3(record **, record **);
 void arrd4(record **, record **, record **);
 void m1(record **, record **);
 void m2(record **);
+
+void empty_else(record **, char *);
 
 #endif

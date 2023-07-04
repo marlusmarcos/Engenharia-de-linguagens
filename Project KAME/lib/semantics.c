@@ -359,13 +359,34 @@ void asg4(record **ss, record **s1, char **s2, record **s3) {
 
 		
 //control_block : IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK				
-void ctrl_b1(record **ss, record **s3, record **s6) {
-	char *str = cat("if (", (*s3)->code, "){\n", (*s6)->code, "}");
+void ctrl_b1(record **ss, record **exp, record **commands, record **elseBlock, char *ifId) {
+	char *str1 = cat("\tif (", (*exp)->code, "){\n", (*commands)->code, "\tgoto ");
+	char *str2 = cat(str1, ifId, ";\n\t}\n\t", (*elseBlock)->code, "");
+	//char *str2 = cat(str1, "goto ", ifId, ";\n", (*elseBlock)->code);
+	*ss = createRecord(str2, "");
+	freeRecord(*exp);
+	freeRecord(*commands);
+	free(str1);
+	free(str2);
+}
+
+
+// else_block : 
+void empty_else(record **ss, char *ifId) {
+	char *str = cat(ifId, ":\n", "", "", "");
 	*ss = createRecord(str, "");
-	freeRecord(*s3);
-	freeRecord(*s6);
 	free(str);
 }
+
+// else_block : ELSE BEGIN_BLOCK commands END_BLOCK
+void else_b(record **ss, record **commands, char *ifId) {
+	char *str = cat("\t{\n", (*commands)->code, "\n}\n", ifId, ":\n");
+	*ss = createRecord(str, "");
+	freeRecord(*commands);
+	free(str);
+}
+
+
 // | IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK	
 //					ELSE BEGIN_BLOCK commands END_BLOCK
 void ctrl_b2(record **ss, record **s3, record **s6, record **s10) {
@@ -386,6 +407,11 @@ void ctrl_b2(record **ss, record **s3, record **s6, record **s10) {
 	free(str4);
 	free(str5);
 }
+
+
+
+
+
 // | WHILE '(' exp ')' BEGIN_BLOCK commands END_BLOCK			
 void ctrl_b3(record **ss, record **s3, record **s6) {
 	char *blockPrefix = cat("Prefix", "_", "", "", "");  //Aqui iremos adicionar o identificador unico seguido de um _
