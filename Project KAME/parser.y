@@ -41,7 +41,7 @@ stack *scopeStack;
 %token ENUM STRUCT VAR BREAK RETURN CONTINUE INPUT OUTPUT FUNCTION PROC WHILE FOR TYPEDEF TRUE FALSE BEGIN_BLOCK END_BLOCK IF ELSE ASSIGN MAIN_BLOCK NOT LENGTH
 
 %type <rec> main_seq command commands id_list declaration_seq subprograms declaration subprogram initialization exp term factor var
-%type <rec> user_def type_def array_dim function proc paramsdef params func_proc_call assign control_block loop_block enum_init else_block
+%type <rec> user_def type_def array_dim function proc paramsdef params func_proc_call assign control_block loop_block enum_init else_block varDef
 %start prog
 
 %%
@@ -104,7 +104,7 @@ proc : PROC ID '(' paramsdef ')' BEGIN_BLOCK {pushS(scopeStack, $2, "");} comman
 { 
 	proc1(&$$, &$2, &$4, &$8); //Prestar atençaõ aqui, o $7 virou $8;
 }; 
-paramsdef : var ':' TYPE							
+paramsdef : varDef ':' TYPE							
 {
 	char strToSlice[100];
 	strcpy(strToSlice, $1->code);
@@ -114,7 +114,7 @@ paramsdef : var ':' TYPE
 	insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $3);
 	pard1(&$$, &$1, &$3); 
 }
-			| var ':' TYPE ',' paramsdef			
+			| varDef ':' TYPE ',' paramsdef			
 {
 	char strToSlice[100];
 	strcpy(strToSlice, $1->code);
@@ -165,7 +165,7 @@ assign : OPC ID							{ asg1(&$$, &$1, &$2); }
 		| var OPA exp					{ asg4(&$$, &$1, &$2, &$3); };
 
 		
-control_block : IF '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, "IF", "");} commands END_BLOCK else_block {popS(scopeStack);} //Aqui talvez precise mudar e guardar o id do if.
+control_block : IF '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, "IF#lc", "");} commands END_BLOCK else_block {popS(scopeStack);} //Aqui talvez precise mudar e guardar o id do if.
 {
 	ctrl_b1(&$$, &$3, &$7, &$9, "EXIT_IDIF"); //nessa parte, irei passar o id do if como parametro para a tradução.
 };
@@ -241,6 +241,9 @@ var : ID
 		}
 	| ID array_dim						{ v2(&$$, &$1, &$2); }
 	| ID '.' var						{ v3(&$$, &$1, &$3); };
+varDef : ID								{ v1(&$$, &$1); }
+	| ID array_dim						{ v2(&$$, &$1, &$2); }
+	| ID '.' varDef						{ v3(&$$, &$1, &$3); };
 array_dim : '[' ']'						{ arrd1(&$$); }
 			| '[' ']' array_dim			{ arrd2(&$$, &$3); }
 			| '[' exp ']'				{ arrd3(&$$, &$2); }
