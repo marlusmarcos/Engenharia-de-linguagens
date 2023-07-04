@@ -17,4 +17,13 @@ typedef struct No
         };
     }
     return newNode;
-}
+};
+
+function printInOrder (var no: Node) {
+    if (no != null) {
+        printInOrder(node.left);
+        printf (node.value + " - ");
+        printInOrder (node.right);
+    };
+};
+
