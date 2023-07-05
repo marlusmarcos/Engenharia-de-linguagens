@@ -37,6 +37,7 @@ main(){
 	for(var i: int = 0; i < length(arrTest); i++){
 		arrTest[i] = i;
 	};
+	input("%d", i);
 
 	quickSort(arrTest, 0, 2);
 };

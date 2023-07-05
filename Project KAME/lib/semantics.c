@@ -251,9 +251,13 @@ void comd9(record **ss, record **s2) {
 void comd10(record **ss) {
     *ss = createRecord("continue", "");
 }
-// | INPUT	'(' ')'
-void comd11(record **ss) {
-    *ss = createRecord("scanf()", "");
+// | INPUT	'(' STR_LITERAL ',' exp ')'	
+void comd11(record **ss, char **s3, record **s5) {
+	char *str = cat("scanf(", *s3, ",", (*s5)->code, ")");
+    *ss = createRecord(str, "");
+	free(str);
+	free(*s3);
+	freeRecord(*s5);
 }
 // | OUTPUT '(' exp ')'		
 void comd12(record **ss, record **s3) {

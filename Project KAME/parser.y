@@ -147,7 +147,7 @@ command : declaration				{ comd1(&$$, &$1); }
 		| RETURN					{ comd8(&$$); }
 		| RETURN exp				{ comd9(&$$, &$2); }
 		| CONTINUE					{ comd10(&$$); }
-		| INPUT	'(' ')'				{ comd11(&$$); }
+		| INPUT	'(' STR_LITERAL ',' exp ')'				{ comd11(&$$, &$3, &$5); }
 		| OUTPUT '(' exp ')'		{ comd12(&$$, &$3); };
 
 

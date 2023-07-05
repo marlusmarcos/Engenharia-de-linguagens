@@ -38,7 +38,7 @@ void comd7(record **);
 void comd8(record **);				
 void comd9(record **, record **);
 void comd10(record **);
-void comd11(record **);	
+void comd11(record **, char **, record **);	
 void comd12(record **, record **);
 	
 void u_d1(record **, char **, record **);
