@@ -587,6 +587,28 @@ void v3(record **ss, char **s1, record **s3) {
 	free(*s1);
 	free(str);
 };
+// | ID '->' var
+void v4(record **ss, char **s1, record **s3){
+	char *str = cat(*s1, "->", (*s3)->code, "", "");
+	*ss = createRecord(str, "");
+	freeRecord(*s3);
+	free(*s1);
+	free(str);
+};
+// | '*' varDef
+void v5(record **ss, record **s2){
+	char *str = cat("*", (*s2)->code, "", "", "");
+	*ss = createRecord(str, "");
+	freeRecord(*s2);
+	free(str);
+};
+// | '&' varDef
+void v6(record **ss, record **s2){
+	char *str = cat("&", (*s2)->code, "", "", "");
+	*ss = createRecord(str, "");
+	freeRecord(*s2);
+	free(str);
+};
 //array_dim : '[' ']'
 void arrd1(record **ss) {
     *ss = createRecord("[]", "");

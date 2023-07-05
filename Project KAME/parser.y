@@ -283,9 +283,34 @@ var : ID
 
 			v3(&$$, &$1, &$3);
 		};
+	| ID '-''>' var					
+		{
+			int stop = 0;
+			int top = scopeStack->top;
+			vatt *stmp = peekS(scopeStack);
+			while(!stop){
+				if(lookup(variablesTable, cat(stmp->subp,"#",$1,"",""))){
+					stop = 1;
+				} else{
+					if(top>0){
+						top--;
+						stmp = stmp->next;
+					} else {
+						yyerror(cat($1," undefined variable","","",""));
+						stop = 1;
+					}
+				}
+			};
+			v4(&$$, &$1, &$4); 
+		}
+	| STRONG_OP var						{ v5(&$$, &$2); }
+	| '&' var						{ v6(&$$, &$2); };
 varDef : ID								{ v1(&$$, &$1); }
 	| ID array_dim						{ v2(&$$, &$1, &$2); }
-	| ID '.' varDef						{ v3(&$$, &$1, &$3); };
+	| ID '.' varDef						{ v3(&$$, &$1, &$3); }
+	| ID '-''>' varDef					{ v4(&$$, &$1, &$4); }
+	| STRONG_OP varDef						{ v5(&$$, &$2); }
+	| '&' varDef						{ v6(&$$, &$2); };
 array_dim : '[' ']'						{ arrd1(&$$); }
 			| '[' ']' array_dim			{ arrd2(&$$, &$3); }
 			| '[' exp ']'				{ arrd3(&$$, &$2); }
