@@ -32,9 +32,9 @@ void dec_seq2(record **ss){
 //declaration : VAR id_list ':' TYPE				
 void dec1(record **ss, record **s2, char **s4) {
 	char *str = cat(*s4, " ", (*s2)->code, "", "");
+	*ss = createRecord(str, *s4);
 	free(*s4);
 	freeRecord(*s2);
-	*ss = createRecord(str, "");
 	free(str);
 }
 // | user_def
@@ -83,7 +83,7 @@ void id_l4(record **ss, char **s1, record **s2, record **s4) {
 //initialization : VAR id_list ':' TYPE ASSIGN exp
 void init1(record **ss, record **s2, char **s4, record **s6) {
 	char *str = cat(*s4, " ", (*s2)->code, " = ", (*s6)->code);
-	*ss = createRecord(str, "");
+	*ss = createRecord(str, *s4);
 	freeRecord(*s2);
 	freeRecord(*s6);
 	free(*s4);
@@ -469,44 +469,44 @@ void fr2(record **ss, record **s3, record **s5, record **s7, record **s10, char 
 
 //exp : term
 void ex1(record **ss, record **s1) {
-	*ss = createRecord((*s1)->code, "");
+	*ss = createRecord((*s1)->code, (*s1)->opt1);
 	freeRecord(*s1);
 }
 // | exp WEAK_OP term
-void ex2(record **ss, record **s1, char **s2, record **s3) {
+void ex2(record **ss, record **s1, char **s2, record **s3, char *type) {
 	char *str = cat((*s1)->code, (*s2), (*s3)->code, "", "");
 	freeRecord(*s1);
 	freeRecord(*s3);
 	free(*s2);
-	*ss = createRecord(str, "");
+	*ss = createRecord(str, type);
 	free(str);
 };
 
 
 //term : factor
 void te1(record **ss, record **s1) {
-	*ss = createRecord((*s1)->code, "");
+	*ss = createRecord((*s1)->code, (*s1)->opt1);
 	free(*s1);
 }
 // | term STRONG_OP factor
-void te2(record **ss, record **s1, char **s2, record **s3) {
+void te2(record **ss, record **s1, char **s2, record **s3, char *type) {
 	char *str = cat((*s1)->code, *s2, (*s3)->code, "", "");
 	freeRecord(*s1);
 	freeRecord(*s3);
 	free(*s2);
-	*ss = createRecord(str, "");
+	*ss = createRecord(str, type);
 	free(str);
 };
 
 
 //factor : var
 void fac1(record **ss, record **s1) {
-    *ss = createRecord((*s1)->code, "");
+    *ss = createRecord((*s1)->code, (*s1)->opt1);
     freeRecord(*s1);
 }
 //| STR_LITERAL
 void fac2(record **ss, char **s1) {
-    *ss = createRecord(*s1, "");
+    *ss = createRecord(*s1, "string");
     free(*s1);
 }
 //| NUMBER						
@@ -514,14 +514,14 @@ void fac3(record **ss, int *s1)  {
 	char strNum[30];
 	sprintf(strNum, "%d", *s1);
 
-	*ss = createRecord(strNum, "");
+	*ss = createRecord(strNum, "int");
 }
 // | REAL							
 void fac4(record **ss, float *s1) {
 	char strNum[30];
 	sprintf(strNum, "%f", *s1);
 
-	*ss = createRecord(strNum, "");
+	*ss = createRecord(strNum, "float");
 }
 // | func_proc_call
 void fac5(record **ss, record **s1) {
@@ -531,50 +531,50 @@ void fac5(record **ss, record **s1) {
 // | '(' exp ')'
 void fac6(record **ss, record **s2) {
 	char *str = cat("(", (*s2)->code, ")", "", "");
-	*ss = createRecord(str, "");
+	*ss = createRecord(str, (*s2)->opt1);
 	freeRecord(*s2);
 	free(str);
 }
 // | WEAK_OP factor				
 void fac7(record **ss, char **s1, record **s2) {
 	char *str = cat(*s1, (*s2)->code, "", "", "");
-	*ss = createRecord(str, "");
+	*ss = createRecord(str, (*s2)->code);
 	freeRecord(*s2);
 	free(*s1);
 	free(str);
 }
 //| TRUE
 void fac8(record **ss) {
-    *ss = createRecord("true", "");
+    *ss = createRecord("1", "boolean");
 }
 // | FALSE
 void fac9(record **ss) {
-    *ss = createRecord("false", "");
+    *ss = createRecord("0", "boolean");
 }
 //| NOT factor					
 void fac10(record **ss, record **s2) {
 	char *str = cat("!", (*s2)->code, "", "", "");
-	*ss = createRecord(str, "");
+	*ss = createRecord(str, "boolean");
 	freeRecord(*s2);
 	free(str);
 }
 //| LENGTH '(' factor ')'			
 void fac11(record **ss, record **s3) {
 	char *str = cat("sizeof(", (*s3)->code, ")", "", "");
-	*ss = createRecord(str, "");
+	*ss = createRecord(str, "int");
 	freeRecord(*s3);
 	free(str);
 };
 
 //var : ID 
-void v1(record **ss, char **s1) {
-    *ss = createRecord(*s1, ""); 
+void v1(record **ss, char **s1, char **type) {
+    *ss = createRecord(*s1, *type);
 	free(*s1);
 }
 // | ID array_dim						
-void v2(record **ss, char **s1, record **s2) {
+void v2(record **ss, char **s1, record **s2, char **type) {
 	char *str = cat(*s1, (*s2)->code, "", "", "");
-	*ss = createRecord(str, "");
+	*ss = createRecord(str, *type);
 	freeRecord(*s2);
 	free(*s1);
 	free(str);
@@ -582,7 +582,7 @@ void v2(record **ss, char **s1, record **s2) {
 // | ID '.' var						
 void v3(record **ss, char **s1, record **s3) {
 	char *str = cat(*s1, ".", (*s3)->code, "", "");
-	*ss = createRecord(str, "");
+	*ss = createRecord(str, (*s3)->opt1);
 	freeRecord(*s3);
 	free(*s1);
 	free(str);
@@ -590,25 +590,70 @@ void v3(record **ss, char **s1, record **s3) {
 // | ID '->' var
 void v4(record **ss, char **s1, record **s3){
 	char *str = cat(*s1, "->", (*s3)->code, "", "");
+	*ss = createRecord(str, (*s3)->opt1);
+	freeRecord(*s3);
+	free(*s1);
+	free(str);
+};
+// | '*' var
+void v5(record **ss, record **s2){
+	char *str = cat("*", (*s2)->code, "", "", "");
+	*ss = createRecord(str, (*s2)->opt1);
+	freeRecord(*s2);
+	free(str);
+};
+// | '&' var
+void v6(record **ss, record **s2){
+	char *str = cat("&", (*s2)->code, "", "", "");
+	*ss = createRecord(str, (*s2)->opt1);
+	freeRecord(*s2);
+	free(str);
+};
+
+//varDef : ID 
+void vd1(record **ss, char **s1) {
+    *ss = createRecord(*s1, "");
+	free(*s1);
+}
+// | ID array_dim						
+void vd2(record **ss, char **s1, record **s2) {
+	char *str = cat(*s1, (*s2)->code, "", "", "");
+	*ss = createRecord(str, "");
+	freeRecord(*s2);
+	free(*s1);
+	free(str);
+}
+// | ID '.' varDef						
+void vd3(record **ss, char **s1, record **s3) {
+	char *str = cat(*s1, ".", (*s3)->code, "", "");
+	*ss = createRecord(str, "");
+	freeRecord(*s3);
+	free(*s1);
+	free(str);
+};
+// | ID '->' varDef
+void vd4(record **ss, char **s1, record **s3){
+	char *str = cat(*s1, "->", (*s3)->code, "", "");
 	*ss = createRecord(str, "");
 	freeRecord(*s3);
 	free(*s1);
 	free(str);
 };
 // | '*' varDef
-void v5(record **ss, record **s2){
+void vd5(record **ss, record **s2){
 	char *str = cat("*", (*s2)->code, "", "", "");
 	*ss = createRecord(str, "");
 	freeRecord(*s2);
 	free(str);
 };
 // | '&' varDef
-void v6(record **ss, record **s2){
+void vd6(record **ss, record **s2){
 	char *str = cat("&", (*s2)->code, "", "", "");
 	*ss = createRecord(str, "");
 	freeRecord(*s2);
 	free(str);
 };
+
 //array_dim : '[' ']'
 void arrd1(record **ss) {
     *ss = createRecord("[]", "");

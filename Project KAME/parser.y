@@ -201,11 +201,29 @@ loop_block : FOR '(' initialization ';' exp ';' assign ')'
 
 
 exp : term							{ ex1(&$$, &$1); }
-	| exp WEAK_OP term				{ ex2(&$$, &$1, &$2, &$3); };
+	| exp WEAK_OP term				
+		{ 
+			if(0 == strcmp($1->opt1, $3->opt1)){
+				char inType[100];
+				strcpy(inType, $3->opt1);
+				ex2(&$$, &$1, &$2, &$3, inType);
+			} else {
+				yyerror(cat("Types ", $1->opt1, " and ", $3->opt1, " are incompatible!"));
+			}
+		};
 
 
 term : factor						{ te1(&$$, &$1); }
-		| term STRONG_OP factor		{ te2(&$$, &$1, &$2, &$3); };
+		| term STRONG_OP factor		
+			{
+				if(0 == strcmp($1->opt1, $3->opt1)){
+					char inType[100];
+					strcpy(inType, $3->opt1);
+					te2(&$$, &$1, &$2, &$3, inType);
+				} else {
+					yyerror(cat("Types ", $1->opt1, " and ", $3->opt1, " are incompatible!"));
+				}
+			};
 
 
 factor : var							{ fac1(&$$, &$1); }
@@ -239,7 +257,9 @@ var : ID
 				}
 			};
 
-			v1(&$$, &$1);
+			SymbolInfos *foundVar = lookup(variablesTable, cat(stmp->subp,"#",$1,"",""));
+			v1(&$$, &$1, &foundVar->type);
+			/*printf("TYPE UP %s %s\n", foundVar->name, foundVar->type);*/
 		}
 	| ID array_dim						
 		{ 
@@ -260,7 +280,8 @@ var : ID
 				}
 			};
 
-			v2(&$$, &$1, &$2); 
+			SymbolInfos *foundVar = lookup(variablesTable, cat(stmp->subp,"#",$1,"",""));
+			v2(&$$, &$1, &$2, &foundVar->type);
 		}
 	| ID '.' var						
 		{
@@ -305,12 +326,12 @@ var : ID
 		}
 	| STRONG_OP var						{ v5(&$$, &$2); }
 	| '&' var						{ v6(&$$, &$2); };
-varDef : ID								{ v1(&$$, &$1); }
-	| ID array_dim						{ v2(&$$, &$1, &$2); }
-	| ID '.' varDef						{ v3(&$$, &$1, &$3); }
-	| ID '-''>' varDef					{ v4(&$$, &$1, &$4); }
-	| STRONG_OP varDef						{ v5(&$$, &$2); }
-	| '&' varDef						{ v6(&$$, &$2); };
+varDef : ID								{ vd1(&$$, &$1); }
+	| ID array_dim						{ vd2(&$$, &$1, &$2); }
+	| ID '.' varDef						{ vd3(&$$, &$1, &$3); }
+	| ID '-''>' varDef					{ vd4(&$$, &$1, &$4); }
+	| STRONG_OP varDef					{ vd5(&$$, &$2); }
+	| '&' varDef						{ vd6(&$$, &$2); };
 array_dim : '[' ']'						{ arrd1(&$$); }
 			| '[' ']' array_dim			{ arrd2(&$$, &$3); }
 			| '[' exp ']'				{ arrd3(&$$, &$2); }

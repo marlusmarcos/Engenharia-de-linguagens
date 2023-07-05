@@ -61,9 +61,9 @@ void ctrl_b3(record **, record **, record **, char *);
 void fr1(record **, record **, record **, record **, record **, char *);
 void fr2(record **, record **, record **, record **, record **, char *);
 void ex1(record **, record **);
-void ex2(record **, record **, char **, record **);
+void ex2(record **, record **, char **, record **, char *);
 void te1(record **, record **);
-void te2(record **, record **, char **, record **);
+void te2(record **, record **, char **, record **, char *);
 void fac1(record **, record **);
 void fac2(record **, char **);
 void fac3(record **, int *);
@@ -76,12 +76,20 @@ void fac9(record **);
 void fac10(record **, record **);
 void fac11(record **, record **);
 
-void v1(record **, char **);
-void v2(record **, char **, record **);
+void v1(record **, char **, char **);
+void v2(record **, char **, record **, char **);
 void v3(record **, char **, record **);
 void v4(record **, char **, record **);
 void v5(record **, record **);
 void v6(record **, record **);
+
+void vd1(record **, char **);
+void vd2(record **, char **, record **);
+void vd3(record **, char **, record **);
+void vd4(record **, char **, record **);
+void vd5(record **, record **);
+void vd6(record **, record **);
+
 void arrd1(record **);
 void arrd2(record **, record **);
 void arrd3(record **, record **);
