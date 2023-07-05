@@ -3,6 +3,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+char * getBlockID(){
+    char *outStr = (char *) malloc(sizeof(char) * 30);
+	sprintf(outStr, "%d", blockID);
+
+    return outStr;
+};
+char * incBlockID(){
+    char *outStr = (char *) malloc(sizeof(char) * 30);
+    blockID++;
+	sprintf(outStr, "%d", blockID);
+
+    return outStr;
+};
+
 /*
 * Função para contatenar até 5 strings.
 */

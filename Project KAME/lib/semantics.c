@@ -360,8 +360,8 @@ void asg4(record **ss, record **s1, char **s2, record **s3) {
 		
 //control_block : IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK				
 void ctrl_b1(record **ss, record **exp, record **commands, record **elseBlock, char *ifId) {
-	char *str1 = cat("\tif (", (*exp)->code, "){\n", (*commands)->code, "\tgoto ");
-	char *str2 = cat(str1, ifId, ";\n\t}\n\t", (*elseBlock)->code, "");
+	char *str1 = cat("if (", (*exp)->code, "){\n", (*commands)->code, "goto ");
+	char *str2 = cat(str1, ifId, ";\n}\n", (*elseBlock)->code, "");
 	//char *str2 = cat(str1, "goto ", ifId, ";\n", (*elseBlock)->code);
 	*ss = createRecord(str2, "");
 	freeRecord(*exp);
@@ -380,7 +380,7 @@ void empty_else(record **ss, char *ifId) {
 
 // else_block : ELSE BEGIN_BLOCK commands END_BLOCK
 void else_b(record **ss, record **commands, char *ifId) {
-	char *str = cat("\t{\n", (*commands)->code, "\n}\n", ifId, ":\n");
+	char *str = cat("{\n", (*commands)->code, "\n}\n", ifId, ":\n");
 	*ss = createRecord(str, "");
 	freeRecord(*commands);
 	free(str);
@@ -389,7 +389,7 @@ void else_b(record **ss, record **commands, char *ifId) {
 
 // | IF '(' exp ')' BEGIN_BLOCK commands END_BLOCK	
 //					ELSE BEGIN_BLOCK commands END_BLOCK
-void ctrl_b2(record **ss, record **s3, record **s6, record **s10) {
+void ctrl_b2(record **ss, record **s3, record **s6, record **s10) { // Esta função não está em uso
 	char *blockPrefix = cat("Prefix", "_", "", "", "");  //Aqui iremos adicionar o identificador unico seguido de um _
 	char *str1 = cat("if (", (*s3)->code, "){\n", "goto ", blockPrefix);
 	char *str2 = cat(str1, "IF_BLOCK;\n}\ngoto ", blockPrefix, "ELSE_BLOCK;\n{\n", blockPrefix);
@@ -413,15 +413,15 @@ void ctrl_b2(record **ss, record **s3, record **s6, record **s10) {
 
 
 // | WHILE '(' exp ')' BEGIN_BLOCK commands END_BLOCK			
-void ctrl_b3(record **ss, record **s3, record **s6) {
-	char *blockPrefix = cat("Prefix", "_", "", "", "");  //Aqui iremos adicionar o identificador unico seguido de um _
-	char *str1 = cat("{\n\t", blockPrefix, "WHILE_IN:\n\t", "if(", (*s3)->code);
-	char *str2 = cat(str1, "){\n\t\t", (*s6)->code, "\t\tgoto ", blockPrefix);
-	char *str3 = cat(str2, "WHILE_IN;\n\t}\n}", "", "", "");
+void ctrl_b3(record **ss, record **s3, record **s6, char *whileId) {
+	//char *blockPrefix = cat("Prefix", "_", "", "", "");
+	char *str1 = cat("{\n", whileId, ":\n", "if(", (*s3)->code);
+	char *str2 = cat(str1, "){\n", (*s6)->code, "goto ", whileId);
+	char *str3 = cat(str2, ";\n}\n}", "", "", "");
 	*ss = createRecord(str3, "");
 	freeRecord(*s3);
 	freeRecord(*s6);
-	free(blockPrefix);
+	free(whileId);
 	free(str1);
 	free(str2);
 	free(str3);
@@ -430,28 +430,28 @@ void ctrl_b3(record **ss, record **s3, record **s6) {
 
 //loop_block : FOR '(' initialization ';' exp ';' assign ')'
 //				BEGIN_BLOCK commands END_BLOCK
-void fr1(record **ss, record **s3, record **s5, record **s7, record **s10) {
-	char *blockPrefix = cat("Prefix", "_", "", "", "");  //Aqui iremos adicionar o identificador unico seguido de um _
-	char *str1 = cat("{\n", (*s3)->code, ";\n", blockPrefix, "FOR_LOOP:\n");;
+void fr1(record **ss, record **s3, record **s5, record **s7, record **s10, char *forId) {
+	//char *blockPrefix = cat("Prefix", "_", "", "", "");  //Aqui iremos adicionar o identificador unico seguido de um _
+	char *str1 = cat("{\n", (*s3)->code, ";\n", forId, ":\n");
 	char *str2 = cat(str1, "if(", (*s5)->code, ") {\n", (*s10)->code);
-	char *str3 = cat(str2, (*s7)->code, ";\ngoto ", blockPrefix, "FOR_LOOP;\n}\n}");
+	char *str3 = cat(str2, (*s7)->code, ";\ngoto ", forId, ";\n}\n}");
 	*ss = createRecord(str3, "");
 	freeRecord(*s3);
 	freeRecord(*s5);
 	freeRecord(*s7);
 	freeRecord(*s10);
-	free(blockPrefix);
+	free(forId);
 	free(str1);
 	free(str2);
 	free(str3);
 }
 // | FOR '(' assign ';' exp ';' assign ')'
 //				BEGIN_BLOCK commands END_BLOCK
-void fr2(record **ss, record **s3, record **s5, record **s7, record **s10) {
-	char *blockPrefix = cat("Prefix", "_", "", "", "");  //Aqui iremos adicionar o identificador unico seguido de um _
-	char *str1 = cat("{\n", (*s7)->code, ";\n", blockPrefix, "FOR_LOOP:\n");;
+void fr2(record **ss, record **s3, record **s5, record **s7, record **s10, char *forId) {
+	//char *blockPrefix = cat("Prefix", "_", "", "", "");  //Aqui iremos adicionar o identificador unico seguido de um _
+	char *str1 = cat("{\n", (*s3)->code, ";\n", forId, ":\n");;
 	char *str2 = cat(str1, "if(", (*s5)->code, ") {\n", (*s10)->code);
-	char *str3 = cat(str2, (*s7)->code, ";\ngoto ", blockPrefix, "FOR_LOOP;\n}\n}");
+	char *str3 = cat(str2, (*s7)->code, ";\ngoto ", forId, ";\n}\n}");
 	*ss = createRecord(str3, "");
 	freeRecord(*s3);
 	freeRecord(*s5);
@@ -556,7 +556,7 @@ void fac10(record **ss, record **s2) {
 }
 //| LENGTH '(' factor ')'			
 void fac11(record **ss, record **s3) {
-	char *str = cat("auxLength(", (*s3)->code, ")", "", "");
+	char *str = cat("sizeof(", (*s3)->code, ")", "", "");
 	*ss = createRecord(str, "");
 	freeRecord(*s3);
 	free(str);

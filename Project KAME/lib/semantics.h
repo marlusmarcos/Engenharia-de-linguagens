@@ -56,10 +56,10 @@ void asg4(record **, record **, char **, record **);
 void ctrl_b1(record **, record **, record **, record **, char *);
 void else_b(record **, record **, char *);
 void ctrl_b2(record **, record **, record **, record **);
-void ctrl_b3(record **, record **, record **);
+void ctrl_b3(record **, record **, record **, char *);
 
-void fr1(record **, record **, record **, record **, record **);
-void fr2(record **, record **, record **, record **, record **);
+void fr1(record **, record **, record **, record **, record **, char *);
+void fr2(record **, record **, record **, record **, record **, char *);
 void ex1(record **, record **);
 void ex2(record **, record **, char **, record **);
 void te1(record **, record **);

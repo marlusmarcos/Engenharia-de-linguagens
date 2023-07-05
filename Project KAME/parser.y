@@ -165,36 +165,38 @@ assign : OPC ID							{ asg1(&$$, &$1, &$2); }
 		| var OPA exp					{ asg4(&$$, &$1, &$2, &$3); };
 
 		
-control_block : IF '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, "IF#lc", "");} commands END_BLOCK else_block {popS(scopeStack);} //Aqui talvez precise mudar e guardar o id do if.
+control_block : IF '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, cat("IF#",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK else_block //Aqui talvez precise mudar e guardar o id do if.
 {
-	ctrl_b1(&$$, &$3, &$7, &$9, "EXIT_IDIF"); //nessa parte, irei passar o id do if como parametro para a tradução.
+	popS(scopeStack);
+	ctrl_b1(&$$, &$3, &$7, &$9, cat("ELSE_",getBlockID(),"","","")); incBlockID(); //nessa parte, irei passar o id do if como parametro para a tradução.
 };
 				
 
 else_block : 
 { 
-	empty_else(&$$, "EXIT_IDIF");
+	empty_else(&$$, cat("ELSE_",getBlockID(),"","","")); incBlockID();
 }
-			| ELSE BEGIN_BLOCK {pushS(scopeStack, "ELSE", "");} commands END_BLOCK {popS(scopeStack);} 
+			| ELSE BEGIN_BLOCK {pushS(scopeStack, cat("ELSE#",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK
 {
-	else_b(&$$, &$4, "EXIT_IDIF");
+	popS(scopeStack);
+	else_b(&$$, &$4, cat("ELSE",getBlockID(),"","","")); incBlockID();
 
 };
 
 
 loop_block : FOR '(' initialization ';' exp ';' assign ')'
-				BEGIN_BLOCK {pushS(scopeStack, "FORINIT", "");} commands END_BLOCK {popS(scopeStack);}			
+				BEGIN_BLOCK {pushS(scopeStack, cat("FORINIT_",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK {popS(scopeStack);}			
 {
-	fr1(&$$, &$3, &$5, &$7, &$11); //$10 virou $11
+	fr1(&$$, &$3, &$5, &$7, &$11, cat("FORINIT_",getBlockID(),"","","")); //$10 virou $11
 }
 			| FOR '(' assign ';' exp ';' assign ')'
-				BEGIN_BLOCK {pushS(scopeStack, "FORASSING", "");} commands END_BLOCK {popS(scopeStack);}
+				BEGIN_BLOCK {pushS(scopeStack, cat("FORASSING_",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK {popS(scopeStack);}
 { 
-	fr2(&$$, &$3, &$5, &$7, &$11); //$10 virou $11
+	fr2(&$$, &$3, &$5, &$7, &$11, cat("FORINIT_",getBlockID(),"","","")); //$10 virou $11
 }
-			| WHILE '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, "WHILE", "");} commands END_BLOCK {popS(scopeStack);}
+			| WHILE '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, cat("WHILE_",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK {popS(scopeStack);}
 { 
-	ctrl_b3(&$$, &$3, &$7); //$6 virou $7
+	ctrl_b3(&$$, &$3, &$7, cat("WHILE_",getBlockID(),"","","")); //$6 virou $7
 }; 
 
 
@@ -239,8 +241,48 @@ var : ID
 
 			v1(&$$, &$1);
 		}
-	| ID array_dim						{ v2(&$$, &$1, &$2); }
-	| ID '.' var						{ v3(&$$, &$1, &$3); };
+	| ID array_dim						
+		{ 
+			int stop = 0;
+			int top = scopeStack->top;
+			vatt *stmp = peekS(scopeStack);
+			while(!stop){
+				if(lookup(variablesTable, cat(stmp->subp,"#",$1,"",""))){
+					stop = 1;
+				} else{
+					if(top>0){
+						top--;
+						stmp = stmp->next;
+					} else {
+						yyerror(cat($1," undefined variable","","",""));
+						stop = 1;
+					}
+				}
+			};
+
+			v2(&$$, &$1, &$2); 
+		}
+	| ID '.' var						
+		{
+			int stop = 0;
+			int top = scopeStack->top;
+			vatt *stmp = peekS(scopeStack);
+			while(!stop){
+				if(lookup(variablesTable, cat(stmp->subp,"#",$1,"",""))){
+					stop = 1;
+				} else{
+					if(top>0){
+						top--;
+						stmp = stmp->next;
+					} else {
+						yyerror(cat($1," undefined variable","","",""));
+						stop = 1;
+					}
+				}
+			};
+
+			v3(&$$, &$1, &$3);
+		};
 varDef : ID								{ v1(&$$, &$1); }
 	| ID array_dim						{ v2(&$$, &$1, &$2); }
 	| ID '.' varDef						{ v3(&$$, &$1, &$3); };
