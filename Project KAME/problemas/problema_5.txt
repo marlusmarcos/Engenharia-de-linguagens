@@ -1,0 +1,22 @@
+function MDC(numUm : int , numDois : int, resultado : int) : void {
+	if (numUm == 0)
+	{
+		resultado = numDois;
+	};
+	else{
+		var resto:int;
+		resto = numUm%numDois;
+		MDC(resto,numUm, resultado);
+	};
+};
+main() {
+	var intUM, intDois :int = 0;
+    var res:int;
+    intput("%i", &intUM);
+    intput("%i", &intDois);
+    MDC(intUM, intDois, &res);
+
+    printf("O MDC é: %d", &res);
+
+    return 0;
+}

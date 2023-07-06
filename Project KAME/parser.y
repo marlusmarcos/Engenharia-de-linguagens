@@ -238,18 +238,24 @@ else_block :
 
 
 loop_block : FOR '(' initialization ';' exp ';' assign ')'
-				BEGIN_BLOCK {pushS(scopeStack, cat("FORINIT_",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK {popS(scopeStack);}			
+				BEGIN_BLOCK {pushS(scopeStack, cat("FORINIT_",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK 			
 {
-	fr1(&$$, &$3, &$5, &$7, &$11, cat("FORINIT_",getBlockID(),"","","")); //$10 virou $11
+	vatt *tmp = peekS(scopeStack);
+	fr1(&$$, &$3, &$5, &$7, &$11, cat(tmp->subp,"","","","")); //$10 virou $11
+	popS(scopeStack);
 }
 			| FOR '(' assign ';' exp ';' assign ')'
-				BEGIN_BLOCK {pushS(scopeStack, cat("FORASSING_",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK {popS(scopeStack);}
+				BEGIN_BLOCK {pushS(scopeStack, cat("FORASSING_",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK 
 { 
-	fr2(&$$, &$3, &$5, &$7, &$11, cat("FORINIT_",getBlockID(),"","","")); //$10 virou $11
+	vatt *tmp = peekS(scopeStack);
+	fr2(&$$, &$3, &$5, &$7, &$11, cat(tmp->subp,"","","","")); //$10 virou $11
+	popS(scopeStack);
 }
-			| WHILE '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, cat("WHILE_",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK {popS(scopeStack);}
+			| WHILE '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, cat("WHILE_",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK 
 { 
-	ctrl_b3(&$$, &$3, &$7, cat("WHILE_",getBlockID(),"","","")); //$6 virou $7
+	vatt *tmp = peekS(scopeStack);
+	ctrl_b3(&$$, &$3, &$7, cat(tmp->subp,"","","","")); //$6 virou $7
+	popS(scopeStack);
 }; 
 
 
@@ -428,7 +434,7 @@ int main (int argc, char ** argv) {
     fclose(yyout);
 
 	//Mostrar a tabela dde simbolos ao final, apenas para testes:
-	/*
+	
 	printf("*******************************\n");
 	printf("Mostrando tabela de variaveis: \n");
 	printTable(variablesTable);
@@ -436,7 +442,7 @@ int main (int argc, char ** argv) {
 	printf("Mostrando tabela de funcoes: \n");
 	printTable(functionsTable);
 	printf("*******************************\n");
-	*/
+	
 
 	return codigo;
 }

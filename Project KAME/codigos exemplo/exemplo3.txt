@@ -4,24 +4,14 @@
 
 main(){
 
-    var soma: int = 0;
-
 	for(var i: int = 0; i < 10; i++){
-		soma += i;
+        for(var j : int = 0; j < 5; j++) {
+
+        };
 	};
     
-    var j: int;
-    var multi: int = 1;
-
-    for(j = 0; j < 5; j++) {
-        multi *= j;
-    };
     
-    var k: int = 3;
     
-    while(k < 10) {
-        k++;
-    };
     
 };
 

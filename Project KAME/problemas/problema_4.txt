@@ -1,0 +1,84 @@
+typedef rationalT = struct s
+ {
+ 	var numerador: int;
+ 	var denominador: int;
+ };
+
+ function fracao(num1 : int,num2 : int): rationalT{
+ 	if (num2 = 0)
+ 	{
+ 		return 0;
+ 	};else{
+ 		var resultado: rationalT;
+ 		resultado.numerador = num1;
+ 		resultado.denominador = num2;
+ 		return resultado;
+ 	};
+ function equivalentes(var fracao1: rationalT, var fracao2: rationalT): boolean
+ 	if (fracao1.numerador/fracao1.denominador == fracao2.numerador/fracao2.denominador)
+ 	{
+ 		return true;
+ 	};
+ 	else{
+ 		return false;
+ 	};
+ };
+ function soma_rational(var num1: rationalT, var num2: rationalT) :rationalT {
+    
+    resultado.numerador = (num1.numerador * num2.denominador) + (num2.numerador * num1.denominador);
+    resultado.denominador = num1.denominador * num2.denominador;
+    return resultado;
+};
+function negacao_rational(var fracao1:rationalT):rationalT {
+    var resultado: rationalT;
+    resultado.numerador = -fracao1.numerador;
+    resultado.denominador = fracao1.denominador;
+    return resultado;
+};
+rationalT subtracao_rational(var fracao1: rationalT,var fracao2:rationalT) {
+    var rationalT negacaoFracao2 = negacao_rational(fracao2):rationalT;
+    return soma_rational(fracao1, negacaoFracao2);
+};
+function multiplicacao_rational(var fracao1:rationalT, var fracao2:rationalT):rationalT {
+    var resultado: rationalT;
+    resultado.numerador = fracao1.numerador * fracao2.numerador;
+    resultado.denominador = fracao1.denominador * fracao2.denominador;
+    return resultado;
+};
+function rationalT inverso_rational(var fracao1:rationalT):rationalT {
+    var resultado: rationalT;
+    resultado.numerador = fracao1.denominador;
+    resultado.denominador = fracao2.numerador;
+    return resultado;
+};
+function divisao_rational(var fracao1:rationalT, var fracao2:rationalT):rationalT {
+    var inversoFracao2 = inverso_rational(fracao2):rationalT;
+    return multiplicacao_rational(fracao1, inversoFracao2);
+};
+main()
+{
+    var num1:int;
+    var num2:int;
+    input("%i", num1);
+    input("%i", num2);
+
+    var num3:int;
+    var num4:int;
+
+    input("%i", num3);
+    input("%i", num4);
+
+    var racional1 = rationalT.numerador(num1),rationalT.denominador(num2):rationalT;
+    var racional2 = rationalT.numerador(num3),rationalT.denominador(num4):rationalT;
+
+    output("%rationalT",fracao(racional1.numerador, racional1.denominador));
+    output("%rationalT",negacao_rational(racional1.numerador, racional1.denominador));
+    output("%d",equivalentes(fracao(racional1.numerador, racional1.denominador),fracao(racional3.numerador, racional4.denominador)))
+	output("%rationalT",soma_rational(fracao(racional1.numerador, racional1.denominador),fracao(racional3.numerador, racional4.denominador)))
+    output("%rationalT",divisao_rational(fracao(racional1.numerador, racional1.denominador),fracao(racional3.numerador, racional4.denominador)))
+    output("%rationalT",multiplicacao_rational(fracao(racional1.numerador, racional1.denominador),fracao(racional3.numerador, racional4.denominador)))
+    output("%rationalT",inverso_rational(racional1.numerador, racional1.denominador));
+    output("%rationalT",subtracao_rational(fracao(racional1.numerador, racional1.denominador),fracao(racional3.numerador, racional4.denominador)))
+
+    return 0;
+};
