@@ -210,7 +210,10 @@ loop_block : FOR '(' initialization ';' exp ';' assign ')'
 exp : term							{ ex1(&$$, &$1); }
 	| exp WEAK_OP term				
 		{ 
-			if(0 == strcmp($1->opt1, $3->opt1)){
+			int intfloat = !(strcmp($1->opt1, "int") || strcmp($3->opt1, "float"));
+			int floatint = !(strcmp($1->opt1, "float") || strcmp($3->opt1, "int"));
+
+			if((0 == strcmp($1->opt1, $3->opt1)) || intfloat || floatint){
 				char inType[100];
 				strcpy(inType, $3->opt1);
 				ex2(&$$, &$1, &$2, &$3, inType);
@@ -223,7 +226,10 @@ exp : term							{ ex1(&$$, &$1); }
 term : factor						{ te1(&$$, &$1); }
 		| term STRONG_OP factor		
 			{
-				if(0 == strcmp($1->opt1, $3->opt1)){
+				int intfloat = !(strcmp($1->opt1, "int") || strcmp($3->opt1, "float"));
+				int floatint = !(strcmp($1->opt1, "float") || strcmp($3->opt1, "int"));
+
+				if((0 == strcmp($1->opt1, $3->opt1)) || intfloat || floatint){
 					char inType[100];
 					strcpy(inType, $3->opt1);
 					te2(&$$, &$1, &$2, &$3, inType);

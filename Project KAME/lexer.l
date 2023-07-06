@@ -61,9 +61,9 @@
 "("						{return(yytext[0]);}
 ")"                 	{return(yytext[0]);}
 
-"or"						{yylval.sValue = strdup(yytext);
+"||"						{yylval.sValue = strdup(yytext);
 								return WEAK_OP;}
-"and" 					   	{yylval.sValue = strdup(yytext);
+"$$" 					   	{yylval.sValue = strdup(yytext);
 								return WEAK_OP;}
 "not" 						{return(NOT);}
 "++" 					   	{yylval.sValue = strdup(yytext);
