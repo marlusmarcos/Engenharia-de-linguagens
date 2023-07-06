@@ -63,9 +63,9 @@
 
 "||"						{yylval.sValue = strdup(yytext);
 								return WEAK_OP;}
-"$$" 					   	{yylval.sValue = strdup(yytext);
+"&&" 					   	{yylval.sValue = strdup(yytext);
 								return WEAK_OP;}
-"not" 						{return(NOT);}
+"!" 						{return(NOT);}
 "++" 					   	{yylval.sValue = strdup(yytext);
 								return OPC;}
 "--" 					    {yylval.sValue = strdup(yytext);

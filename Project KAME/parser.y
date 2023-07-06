@@ -18,6 +18,7 @@ SymbolTable *variablesTable;
 SymbolTable *functionsTable;
 stack *scopeStack;
 void insertFunctionParam(char *, char *, char *);
+int countFuncCallParams;
 
 %}
 
@@ -133,11 +134,51 @@ paramsdef : varDef ':' TYPE
 }
 			| 										{ pard3(&$$); };
 
-params : exp							{ par1(&$$, &$1); }
-		| exp ',' params				{ par2(&$$, &$1, &$3); }
+params : exp							
+			{
+				char strP[30];
+				sprintf(strP, "%d", countFuncCallParams);
+				vatt *tmp = peekS(scopeStack);
+				SymbolInfos *declaredFunParam = lookup(functionsTable, cat(tmp->subp,"#p",strP,"",""));
+				
+				int intfloat = !(strcmp(declaredFunParam->type, "int") || strcmp($1->opt1, "float"));
+				int floatint = !(strcmp(declaredFunParam->type, "float") || strcmp($1->opt1, "int"));
+
+				if((0 == strcmp(declaredFunParam->type, $1->opt1)) || intfloat || floatint){
+					par1(&$$, &$1);
+				} else {
+					yyerror(cat("Expected type ", declaredFunParam->type, " and actual ", $1->opt1, " are incompatible!"));
+				}
+
+				countFuncCallParams++;
+			}
+		| exp ',' params				
+			{ 
+				char strP[30];
+				sprintf(strP, "%d", countFuncCallParams);
+				vatt *tmp = peekS(scopeStack);
+				SymbolInfos *declaredFunParam = lookup(functionsTable, cat(tmp->subp,"#p",strP,"",""));
+				
+				int intfloat = !(strcmp(declaredFunParam->type, "int") || strcmp($1->opt1, "float"));
+				int floatint = !(strcmp(declaredFunParam->type, "float") || strcmp($1->opt1, "int"));
+
+				if((0 == strcmp(declaredFunParam->type, $1->opt1)) || intfloat || floatint){
+					par2(&$$, &$1, &$3);
+				} else {
+					yyerror(cat("Expected type ", declaredFunParam->type, " and actual ", $1->opt1, " are incompatible!"));
+				}
+
+				countFuncCallParams++;
+			}
 		| 								{ par3(&$$); };
 
-func_proc_call : ID '(' params ')'		{ f_proc_c1(&$$, &$1, &$3); };
+func_proc_call : ID {pushS(scopeStack, $1, "");} '(' params ')'		
+					{
+						vatt *tmp = peekS(scopeStack);
+						f_proc_c1(&$$, &$1, &$4);
+						popS(scopeStack);
+						countFuncCallParams = 0;
+					};
 
 
 commands : command ';' commands			{ comds1(&$$, &$1, &$3); }
@@ -373,6 +414,7 @@ int main (int argc, char ** argv) {
 	variablesTable = createSymbolTable(TABLE_SIZE);
 	functionsTable = createSymbolTable(TABLE_SIZE);
 	scopeStack = newStack();
+	countFuncCallParams = 0;
 
     codigo = yyparse();
 
