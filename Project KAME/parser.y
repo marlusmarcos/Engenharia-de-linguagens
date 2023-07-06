@@ -17,6 +17,7 @@ extern FILE * yyin, * yyout;
 SymbolTable *variablesTable;
 SymbolTable *functionsTable;
 stack *scopeStack;
+void insertFunctionParam(char *, char *, char *);
 
 %}
 
@@ -96,13 +97,17 @@ subprogram : function								{ subprog1(&$$, &$1); }
 			| proc 									{ subprog1(&$$, &$1); };
 
 
-function : FUNCTION ID {pushS(scopeStack, $2, "");} '(' paramsdef ')' ':' TYPE BEGIN_BLOCK commands END_BLOCK {popS(scopeStack);}
+function : FUNCTION ID {pushS(scopeStack, $2, "");} '(' paramsdef ')' ':' TYPE BEGIN_BLOCK commands END_BLOCK
 { 
+	vatt *tmp = peekS(scopeStack);
+	insert(functionsTable, cat(tmp->subp, "#r","","",""), "return", $8);
 	func1(&$$, &$2, &$5, &$8, &$10);  //Prestar atençaõ aqui, o $9 virou $10, 4->5, 7, 8;
+	popS(scopeStack);
 };
-proc : PROC ID '(' paramsdef ')' BEGIN_BLOCK {pushS(scopeStack, $2, "");} commands END_BLOCK	{popS(scopeStack);}
+proc : PROC ID {pushS(scopeStack, $2, "");} '(' paramsdef ')' BEGIN_BLOCK commands END_BLOCK
 { 
-	proc1(&$$, &$2, &$4, &$8); //Prestar atençaõ aqui, o $7 virou $8;
+	proc1(&$$, &$2, &$5, &$8); //Prestar atençaõ aqui, $4->$5 o $7 virou $8;
+	popS(scopeStack);
 }; 
 paramsdef : varDef ':' TYPE							
 {
@@ -112,6 +117,7 @@ paramsdef : varDef ':' TYPE
 
 	vatt *tmp = peekS(scopeStack);
 	insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $3);
+	insertFunctionParam(tmp->subp, tokenSliced, $3);
 	pard1(&$$, &$1, &$3); 
 }
 			| varDef ':' TYPE ',' paramsdef			
@@ -122,6 +128,7 @@ paramsdef : varDef ':' TYPE
 
 	vatt *tmp = peekS(scopeStack);
 	insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $3);
+	insertFunctionParam(tmp->subp, tokenSliced, $3);
 	pard2(&$$, &$1, &$3, &$5);
 }
 			| 										{ pard3(&$$); };
@@ -383,4 +390,16 @@ int main (int argc, char ** argv) {
 int yyerror (char *msg) {
 	fprintf (stderr, "%d: %s at '%s'\n", yylineno, msg, yytext);
 	return 0;
+}
+
+void insertFunctionParam(char *functionId, char *paramName, char *paramType){
+	int paramId = 0; 
+	char strNum[30];
+
+	do {
+		sprintf(strNum, "%d", paramId);
+		paramId++;
+	} while(lookup(functionsTable, cat(functionId,"#p",strNum,"","")));
+
+	insert(functionsTable, cat(functionId,"#p",strNum,"",""), paramName, paramType);
 }
