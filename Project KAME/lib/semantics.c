@@ -31,7 +31,15 @@ void dec_seq2(record **ss){
 
 //declaration : VAR id_list ':' TYPE				
 void dec1(record **ss, record **s2, char **s4) {
-	char *str = cat(*s4, " ", (*s2)->code, "", "");
+	char *str;
+
+	if(0 == strcmp(*s4, "string")){
+		str = cat("char *", " ", (*s2)->code, "", "");
+	} else if (0 == strcmp(*s4, "boolean")){
+		str = cat("int", " ", (*s2)->code, "", "");
+	} else {
+		str = cat(*s4, " ", (*s2)->code, "", "");
+	}
 	*ss = createRecord(str, *s4);
 	free(*s4);
 	freeRecord(*s2);
@@ -82,7 +90,15 @@ void id_l4(record **ss, char **s1, record **s2, record **s4) {
 
 //initialization : VAR id_list ':' TYPE ASSIGN exp
 void init1(record **ss, record **s2, char **s4, record **s6) {
-	char *str = cat(*s4, " ", (*s2)->code, " = ", (*s6)->code);
+	char *str;
+
+	if(0 == strcmp(*s4, "string")){
+		str = cat("char *", " ", (*s2)->code, " = ", (*s6)->code);
+	} else if (0 == strcmp(*s4, "boolean")){
+		str = cat("int", " ", (*s2)->code, " = ", (*s6)->code);
+	} else {
+		str = cat(*s4, " ", (*s2)->code, " = ", (*s6)->code);
+	}
 	*ss = createRecord(str, *s4);
 	freeRecord(*s2);
 	freeRecord(*s6);
@@ -117,7 +133,15 @@ void subprog2(record **ss, record **s1) {
 
 //function : FUNCTION ID '(' paramsdef ')' ':' TYPE BEGIN_BLOCK /{pilhaEscopo.push(s2)}/ commands END_BLOCK	/{pilhaEscopo.pop()}/
 void func1(record **ss, char **s2, record **s4, char **s7, record **s9) {
-	char *str1 = cat(*s7, " ", *s2, "(", (*s4)->code);
+	char *str1;
+
+	if(0 == strcmp(*s7, "string")){
+		str1 = cat("char *", " ", *s2, "(", (*s4)->code);
+	} else if (0 == strcmp(*s7, "boolean")){
+		str1 = cat("int", " ", *s2, "(", (*s4)->code);
+	} else {
+		str1 = cat(*s7, " ", *s2, "(", (*s4)->code);
+	}
 	char *str2 = cat(str1, "){\n", (*s9)->code, "}", "");
 	*ss = createRecord(str2, "");
 	freeRecord(*s4);
@@ -141,7 +165,15 @@ void proc1(record **ss, char **s2, record **s4, record **s7) {
 };
 //paramsdef : var ':' TYPE
 void pard1(record **ss, record **s1, char **s3) {
-	char *str = cat(*s3, " ", (*s1)->code, "", "");
+	char *str;
+
+	if(0 == strcmp(*s3, "string")){
+		str = cat("char *", " ", (*s1)->code, "", "");
+	} else if (0 == strcmp(*s3, "boolean")){
+		str = cat("int", " ", (*s1)->code, "", "");
+	} else {
+		str = cat(*s3, " ", (*s1)->code, "", "");
+	}
 	*ss = createRecord(str, "");
 	freeRecord(*s1);
 	free(*s3);
@@ -149,7 +181,15 @@ void pard1(record **ss, record **s1, char **s3) {
 };
 // | var ':' TYPE ',' paramsdef	
 void pard2(record **ss, record **s1, char **s3, record **s5) {
-	char *str = cat(*s3, " ", (*s1)->code, ", ", (*s5)->code);
+	char *str;
+
+	if(0 == strcmp(*s3, "string")){
+		str = cat("char *", " ", (*s1)->code, ", ", (*s5)->code);
+	} else if (0 == strcmp(*s3, "boolean")){
+		str = cat("int", " ", (*s1)->code, ", ", (*s5)->code);
+	} else {
+		str = cat(*s3, " ", (*s1)->code, ", ", (*s5)->code);
+	}
 	*ss = createRecord(str, "");
 	freeRecord(*s1);
 	freeRecord(*s5);
