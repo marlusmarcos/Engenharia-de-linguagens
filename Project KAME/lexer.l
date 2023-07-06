@@ -104,9 +104,9 @@
 
 (\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)		;
 
-(\"[a-zA-Z0-9\%_ ]*\")	  		{yylval.sValue = strdup(yytext);
+(\"[a-zA-Z0-9\%_ \n\\]*\")	  		{yylval.sValue = strdup(yytext);
 								return STR_LITERAL;}
-(\'[a-zA-Z0-9\%_ ]*\')	  		{yylval.sValue = strdup(yytext);
+(\'[a-zA-Z0-9\%_ \n\\]*\')	  		{yylval.sValue = strdup(yytext);
 								return STR_LITERAL;}
 [a-zA-Z][a-zA-Z0-9]*		{yylval.sValue = strdup(yytext); 
                       			return ID;}

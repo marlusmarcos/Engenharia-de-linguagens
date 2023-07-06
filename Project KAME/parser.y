@@ -17,6 +17,7 @@ extern FILE * yyin, * yyout;
 SymbolTable *variablesTable;
 SymbolTable *functionsTable;
 stack *scopeStack;
+stack *stkFixElse;
 void insertFunctionParam(char *, char *, char *);
 int countFuncCallParams;
 
@@ -213,22 +214,26 @@ assign : OPC ID							{ asg1(&$$, &$1, &$2); }
 		| var OPA exp					{ asg4(&$$, &$1, &$2, &$3); };
 
 		
-control_block : IF '(' exp ')' BEGIN_BLOCK {pushS(scopeStack, cat("IF#",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK else_block //Aqui talvez precise mudar e guardar o id do if.
+control_block : IF '(' exp ')' BEGIN_BLOCK {pushS(stkFixElse,cat("if",getBlockID(),"","",""),""); pushS(scopeStack,cat("IF#",getBlockID(),"","",""),""); incBlockID();} commands END_BLOCK else_block //Aqui talvez precise mudar e guardar o id do if.
 {
+	vatt *tmp = peekS(stkFixElse);
+	ctrl_b1(&$$, &$3, &$7, &$9, cat("ELSE_",tmp->subp,"","","")); //nessa parte, irei passar o id do if como parametro para a tradução.
+	popS(stkFixElse);
 	popS(scopeStack);
-	ctrl_b1(&$$, &$3, &$7, &$9, cat("ELSE_",getBlockID(),"","","")); incBlockID(); //nessa parte, irei passar o id do if como parametro para a tradução.
 };
 				
 
 else_block : 
 { 
-	empty_else(&$$, cat("ELSE_",getBlockID(),"","","")); incBlockID();
+	vatt *tmp = peekS(stkFixElse);
+	empty_else(&$$, cat("ELSE_",tmp->subp,"","",""));
 }
 			| ELSE BEGIN_BLOCK {pushS(scopeStack, cat("ELSE#",getBlockID(),"","",""), ""); incBlockID();} commands END_BLOCK
 {
+	vatt *tmp = peekS(stkFixElse);
+	else_b(&$$, &$4, cat("ELSE_",tmp->subp,"","","")); 
+	incBlockID();
 	popS(scopeStack);
-	else_b(&$$, &$4, cat("ELSE",getBlockID(),"","","")); incBlockID();
-
 };
 
 
@@ -414,6 +419,7 @@ int main (int argc, char ** argv) {
 	variablesTable = createSymbolTable(TABLE_SIZE);
 	functionsTable = createSymbolTable(TABLE_SIZE);
 	scopeStack = newStack();
+	stkFixElse = newStack();
 	countFuncCallParams = 0;
 
     codigo = yyparse();

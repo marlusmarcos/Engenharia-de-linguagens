@@ -13,8 +13,8 @@ main() {
     var entrada: int = 0;
 
     while(entrada >= 0){
-    input("%d", entrada);
-	if(entrada <= 25){
+    input("%d", &entrada);
+	if(entrada >= 0 && entrada <= 25){
 	    intervalo0a25++;
 	};
 	if(entrada > 25 && entrada <= 50){
@@ -27,8 +27,8 @@ main() {
 		intervalo76a100++;
 	};		
 };
-	output("%d",intervalo0a25);	
-	output("%d",intervalo26a50);	
-	output("%d",intervalo51a75);	
-	output("%d",intervalo76a100);	
+	output("%d\n",intervalo0a25);	
+	output("%d\n",intervalo26a50);	
+	output("%d\n",intervalo51a75);	
+	output("%d\n",intervalo76a100);	
 };
