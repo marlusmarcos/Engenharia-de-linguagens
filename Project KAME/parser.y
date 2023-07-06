@@ -50,7 +50,7 @@ int countFuncCallParams;
 prog : {pushS(scopeStack, "global", "");} declaration_seq subprograms main_seq
 {
 	popS(scopeStack);
-	fprintf(yyout, "%s\n%s\n%s", $2->code, $3->code, $4->code); //$1 virou $2 e incrementou 1 em todos.
+	fprintf(yyout, "#include <stdio.h>\n%s\n%s\n%s", $2->code, $3->code, $4->code); //$1 virou $2 e incrementou 1 em todos.
 	freeRecord($2);
 	freeRecord($3);
 	freeRecord($4);
