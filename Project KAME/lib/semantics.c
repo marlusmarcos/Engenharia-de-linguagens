@@ -259,11 +259,12 @@ void comd11(record **ss, char **s3, record **s5) {
 	free(*s3);
 	freeRecord(*s5);
 }
-// | OUTPUT '(' exp ')'		
-void comd12(record **ss, record **s3) {
-	char *str = cat("printf(", (*s3)->code, ");", "", "");
+// | OUTPUT	'(' STR_LITERAL ',' exp ')'	
+void comd12(record **ss, char **s3, record**s5) {
+	char *str = cat("printf(", *s3, ",", (*s5)->code, ")");
 	*ss = createRecord(str, "");
-	freeRecord(*s3);
+	free(*s3);
+	freeRecord(*s5);
 	free(str);
 };
 

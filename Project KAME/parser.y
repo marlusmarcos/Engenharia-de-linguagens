@@ -154,8 +154,8 @@ command : declaration				{ comd1(&$$, &$1); }
 		| RETURN					{ comd8(&$$); }
 		| RETURN exp				{ comd9(&$$, &$2); }
 		| CONTINUE					{ comd10(&$$); }
-		| INPUT	'(' STR_LITERAL ',' exp ')'				{ comd11(&$$, &$3, &$5); }
-		| OUTPUT '(' exp ')'		{ comd12(&$$, &$3); };
+		| INPUT	'(' STR_LITERAL ',' exp ')'			{ comd11(&$$, &$3, &$5); }
+		| OUTPUT '(' STR_LITERAL ',' exp ')'		{ comd12(&$$, &$3, &$5); };
 
 
 user_def : STRUCT ID BEGIN_BLOCK declaration_seq END_BLOCK		{ u_d1(&$$, &$2, &$4); }
