@@ -146,7 +146,7 @@ void func1(record **ss, char **s2, record **s4, char **s7, record **s9) {
 	*ss = createRecord(str2, "");
 	freeRecord(*s4);
 	freeRecord(*s9);
-	free(*s2);
+	//free(*s2);
     free(*s7);
 	free(str1);
 	free(str2);
@@ -159,7 +159,7 @@ void proc1(record **ss, char **s2, record **s4, record **s7) {
 	*ss = createRecord(str2, "");
 	freeRecord(*s4);
 	freeRecord(*s7);
-	free(*s2);
+	//free(*s2);
 	free(str1);
 	free(str2);
 };
@@ -223,7 +223,7 @@ void f_proc_c1(record **ss, char **s1, record **s3) {
 	char *str = cat(*s1, "(", (*s3)->code, ")", "");
 	*ss = createRecord(str, "");
 	freeRecord(*s3);
-	free(*s1);
+	//free(*s1);
 	free(str);
 };
 
@@ -314,7 +314,7 @@ void u_d1(record **ss, char **s2, record **s4) {
 	char *str = cat("struct", *s2, "{\n", (*s4)->code, "}");
 	*ss = createRecord(str, "");
 	freeRecord(*s4);
-	free(*s2);
+	//free(*s2);
 	free(str);
 }
 // | ENUM ID BEGIN_BLOCK enum_init END_BLOCK				
@@ -322,7 +322,7 @@ void u_d2(record **ss, char **s2, record **s4) {
 	char *str = cat("enum", *s2, "{\n", (*s4)->code, "}");
 	*ss = createRecord(str, "");
 	freeRecord(*s4);
-	free(*s2);
+	//free(*s2);
 	free(str);
 };
 //enum_init :	ID

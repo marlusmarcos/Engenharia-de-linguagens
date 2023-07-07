@@ -1,8 +1,7 @@
 function MDC(numUm : int , numDois : int, resultado : int) : void {
-	if (numUm == 0)
-	{
+	if (numUm == 0){
 		resultado = numDois;
-	};
+	}
 	else{
 		var resto:int;
 		resto = numUm%numDois;
@@ -10,13 +9,13 @@ function MDC(numUm : int , numDois : int, resultado : int) : void {
 	};
 };
 main() {
-	var intUM, intDois :int = 0;
+	var intUM :int = 0; var intDois :int = 0;
     var res:int;
-    intput("%i", &intUM);
-    intput("%i", &intDois);
+    input("%d", &intUM);
+    input("%d", &intDois);
     MDC(intUM, intDois, &res);
 
-    printf("O MDC é: %d", &res);
+    output("O MDC eh %d\n", &res);
 
     return 0;
 }

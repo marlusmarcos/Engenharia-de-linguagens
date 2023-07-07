@@ -37,7 +37,7 @@ main(){
 	for(var i: int = 0; i < length(arrTest); i++){
 		arrTest[i] = i;
 	};
-	var a int;
+	var a :int;
 	input("%d", &i);
 
 	quickSort(arrTest, 0, 2);
