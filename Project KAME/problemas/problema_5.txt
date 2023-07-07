@@ -18,4 +18,4 @@ main() {
     output("O MDC eh %d\n", &res);
 
     return 0;
-}
+};

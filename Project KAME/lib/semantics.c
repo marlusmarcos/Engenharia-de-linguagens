@@ -425,7 +425,7 @@ void empty_else(record **ss, char *ifId) {
 
 // else_block : ELSE BEGIN_BLOCK commands END_BLOCK
 void else_b(record **ss, record **commands, char *ifId) {
-	char *str = cat("{\n", ifId, ":\n", (*commands)->code, "};\n");
+	char *str = cat("{\n", (*commands)->code, "};\n", ifId, ":\n");
 	*ss = createRecord(str, "");
 	freeRecord(*commands);
 	free(str);
