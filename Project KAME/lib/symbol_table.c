@@ -85,21 +85,20 @@ SymbolInfos *lookup(SymbolTable *table, char *key) {
 void printTable(SymbolTable *table) {
     int i;
     
-    printf("symbols of the table:\n");
-    
+
     for (i = 0; i < table->size; i++) {
         listNode *current = table->symbols[i];
         
         while (current != NULL) {
-            printf("\n***********************\n");
-            printf("Chave: %s\n", current->symbol->key);
-            printf("Nome: %s\n", current->symbol->name);
-            printf("Tipo: %s\n", current->symbol->type);
-            printf("\n***********************\n\n");
+            printf("--------------------------\n");
+            printf("Chave:  | %s\n", current->symbol->key);
+            printf("Nome:   | %s\n", current->symbol->name);
+            printf("Tipo:   | %s\n", current->symbol->type);
             
             current = current->nextNode;
         }
     }
+    printf("--------------------------\n");
 }
 
 void freeSymbol(SymbolInfos *symbol) {
