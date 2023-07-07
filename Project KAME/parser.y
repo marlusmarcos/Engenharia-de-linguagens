@@ -414,11 +414,19 @@ main_seq : MAIN_BLOCK '(' ')' BEGIN_BLOCK {pushS(scopeStack, "main", "");} comma
 int main (int argc, char ** argv) {
  	int codigo;
 
-    if (argc != 3) {
+	int mostrarTabelaDeSimbolos = 0;
+
+    if (argc < 3) {
        printf("Usage: $./compiler input.txt output.txt\nClosing application...\n");
        exit(0);
     }
-    
+
+	if(argc == 4) {
+		if (strcmp(argv[3], "-t") == 0) {
+            mostrarTabelaDeSimbolos = 1;
+        } 
+	}
+	
     yyin = fopen(argv[1], "r");
     yyout = fopen(argv[2], "w");
 
@@ -428,22 +436,30 @@ int main (int argc, char ** argv) {
 	stkFixElse = newStack();
 	countFuncCallParams = 0;
 
+	printf("\n*******************************\n");
+	printf("Mostrando Operações na pilha de escopo: \n");
+	printf("*******************************\n");
+	
     codigo = yyparse();
+
+	printf("*******************************\n");
+	
+	
 
     fclose(yyin);
     fclose(yyout);
 
-	//Mostrar a tabela dde simbolos ao final, apenas para testes:
+	if(mostrarTabelaDeSimbolos)	 {
+		printf("\n*******************************\n");
+		printf("Mostrando tabela de variaveis: \n");
+		printf("*******************************\n");
+		printTable(variablesTable);
+		printf("*******************************\n");
+		printf("Mostrando tabela de funcoes: \n");
+		printf("*******************************\n");
+		printTable(functionsTable);
+	}
 	
-	printf("*******************************\n");
-	printf("Mostrando tabela de variaveis: \n");
-	printTable(variablesTable);
-	printf("*******************************\n");
-	printf("Mostrando tabela de funcoes: \n");
-	printTable(functionsTable);
-	printf("*******************************\n");
-	
-
 	return codigo;
 }
 
