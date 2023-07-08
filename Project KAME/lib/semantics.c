@@ -155,8 +155,8 @@ void func1(record **ss, char **s2, record **s4, char **s7, record **s9) {
 //proc : PROC ID '(' paramsdef ')' BEGIN_BLOCK /{pilhaEscopo.push(s2)}/ commands END_BLOCK	/{pilhaEscopo.pop()}/
 void proc1(record **ss, char **s2, record **s4, record **s7) {
 	char *str1 = cat("void ", *s2, "(", (*s4)->code, "");
-	char *str2 = cat(str2, "){\n", (*s7)->code, "}", "");
-	*ss = createRecord(str2, "");
+	char *str2 = cat(str1, "){\n", (*s7)->code, "}", "");
+	*ss = createRecord(str2, "void");
 	freeRecord(*s4);
 	freeRecord(*s7);
 	//free(*s2);
@@ -219,9 +219,9 @@ void par3(record **ss) {
 };
 
 //func_proc_call : ID '(' params ')'
-void f_proc_c1(record **ss, char **s1, record **s3) {
+void f_proc_c1(record **ss, char **s1, record **s3, char *type) {
 	char *str = cat(*s1, "(", (*s3)->code, ")", "");
-	*ss = createRecord(str, "");
+	*ss = createRecord(str, type);
 	freeRecord(*s3);
 	//free(*s1);
 	free(str);
@@ -269,7 +269,7 @@ void comd5(record **ss, record **s1) {
 }
 // | func_proc_call
 void comd6(record **ss, record **s1) {
-    *ss = createRecord((*s1)->code, "");
+    *ss = createRecord((*s1)->code, (*s1)->opt1);
     freeRecord(*s1);
 }
 //| BREAK

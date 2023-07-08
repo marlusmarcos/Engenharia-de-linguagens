@@ -99,16 +99,14 @@ subprogram : function								{ subprog1(&$$, &$1); }
 			| proc 									{ subprog1(&$$, &$1); };
 
 
-function : FUNCTION ID {pushS(scopeStack, $2, "");} '(' paramsdef ')' ':' TYPE BEGIN_BLOCK commands END_BLOCK
+function : FUNCTION ID {pushS(scopeStack, $2, "");} '(' paramsdef ')' ':' TYPE BEGIN_BLOCK {insert(functionsTable,cat($2,"#r","","",""),"return",$8);} commands END_BLOCK
 { 
-	vatt *tmp = peekS(scopeStack);
-	insert(functionsTable, cat(tmp->subp, "#r","","",""), "return", $8);
-	func1(&$$, &$2, &$5, &$8, &$10);  //Prestar atençaõ aqui, o $9 virou $10, 4->5, 7, 8;
+	func1(&$$, &$2, &$5, &$8, &$11);  //Prestar atençaõ aqui, o $9 virou $11, 4->5, 7, 8;
 	popS(scopeStack);
 };
-proc : PROC ID {pushS(scopeStack, $2, "");} '(' paramsdef ')' BEGIN_BLOCK commands END_BLOCK
+proc : PROC ID {pushS(scopeStack, $2, "");} '(' paramsdef ')' BEGIN_BLOCK {insert(functionsTable,cat($2,"#r","","",""),"r","void");} commands END_BLOCK
 { 
-	proc1(&$$, &$2, &$5, &$8); //Prestar atençaõ aqui, $4->$5 o $7 virou $8;
+	proc1(&$$, &$2, &$5, &$9); //Prestar atençaõ aqui, $4->$5 o $7 virou $;
 	popS(scopeStack);
 }; 
 paramsdef : varDef ':' TYPE							
@@ -175,10 +173,17 @@ params : exp
 
 func_proc_call : ID {pushS(scopeStack, $1, "");} '(' params ')'		
 					{
-						vatt *tmp = peekS(scopeStack);
-						f_proc_c1(&$$, &$1, &$4);
-						popS(scopeStack);
-						countFuncCallParams = 0;
+						SymbolInfos *foundFuncReturn = lookup(functionsTable, cat($1,"#r","","",""));
+						if(foundFuncReturn){
+							char funcType[100];
+                        	strcpy(funcType, foundFuncReturn->type);
+							
+                        	f_proc_c1(&$$, &$1, &$4, funcType);
+                        	popS(scopeStack);
+                        	countFuncCallParams = 0;
+						} else {
+                        	yyerror(cat("undefined function ",$1,"","",""));
+						}
 					};
 
 

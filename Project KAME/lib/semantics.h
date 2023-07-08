@@ -25,7 +25,7 @@ void pard3(record **);
 void par1(record **, record **);
 void par2(record **, record **, record **);
 void par3(record **);
-void f_proc_c1(record **, char **, record **);
+void f_proc_c1(record **, char **, record **, char *);
 void comds1(record **, record **, record **);
 void comds2(record **);
 void comd1(record **, record **);
