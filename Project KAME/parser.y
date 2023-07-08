@@ -87,7 +87,15 @@ initialization : VAR id_list ':' TYPE ASSIGN exp
 {
 	vatt *tmp = peekS(scopeStack);
 	insert(variablesTable, cat(tmp->subp, "#", $2->code,"",""), $2->code, $4);
-	init1(&$$, &$2, &$4, &$6);
+
+	int intfloat = !(strcmp($4, "int") || strcmp($6->opt1, "float"));
+	int floatint = !(strcmp($4, "float") || strcmp($6->opt1, "int"));
+
+	if((0 == strcmp($4, $6->opt1)) || intfloat || floatint){
+		init1(&$$, &$2, &$4, &$6);
+	} else {
+		yyerror(cat("Inicialization of ", $4, " from type ", $6->opt1, " are incompatible!"));
+	}
 };
 
 
@@ -199,7 +207,24 @@ command : declaration				{ comd1(&$$, &$1); }
 		| func_proc_call			{ comd6(&$$, &$1); }
 		| BREAK						{ comd7(&$$); }
 		| RETURN					{ comd8(&$$); }
-		| RETURN exp				{ comd9(&$$, &$2); }
+		| RETURN exp				
+			{
+				vatt *functmp = peekS(scopeStack);
+				SymbolInfos *foundFuncReturn = lookup(functionsTable, cat(functmp->subp,"#r","","",""));
+
+				if(foundFuncReturn){
+					char funcType[100];
+					strcpy(funcType, foundFuncReturn->type);
+					
+					if(0 == strcmp(funcType, $2->opt1)){
+						comd9(&$$, &$2);
+					} else {
+						yyerror(cat("Function with return type ", funcType, " and return ", $2->opt1, " of the expression are incompatible"));
+					}
+				} else {
+					yyerror("function return not found");
+				}
+			}
 		| CONTINUE					{ comd10(&$$); }
 		| INPUT	'(' STR_LITERAL ',' exp ')'			{ comd11(&$$, &$3, &$5); }
 		| OUTPUT '(' STR_LITERAL ',' exp ')'		{ comd12(&$$, &$3, &$5); };
@@ -215,8 +240,28 @@ type_def : TYPEDEF ID ASSIGN user_def							{ ty_d1(&$$, &$2, &$4); };
 
 assign : OPC ID							{ asg1(&$$, &$1, &$2); }
 		| ID OPC						{ asg2(&$$, &$1, &$2); }
-		| var ASSIGN exp				{ asg3(&$$, &$1, &$3); }
-		| var OPA exp					{ asg4(&$$, &$1, &$2, &$3); };
+		| var ASSIGN exp				
+			{
+				int intfloat = !(strcmp($1->opt1, "int") || strcmp($3->opt1, "float"));
+				int floatint = !(strcmp($1->opt1, "float") || strcmp($3->opt1, "int"));
+
+				if((0 == strcmp($1->opt1, $3->opt1)) || intfloat || floatint){
+					asg3(&$$, &$1, &$3);
+				} else {
+					yyerror(cat("Assign of ", $1->opt1, " from type ", $3->opt1, " are incompatible"));
+				}
+			}
+		| var OPA exp					
+			{
+				int intfloat = !(strcmp($1->opt1, "int") || strcmp($3->opt1, "float"));
+				int floatint = !(strcmp($1->opt1, "float") || strcmp($3->opt1, "int"));
+
+				if((0 == strcmp($1->opt1, $3->opt1)) || intfloat || floatint){
+					asg4(&$$, &$1, &$2, &$3);
+				} else {
+					yyerror(cat("Assign of ", $1->opt1, " from type ", $3->opt1, " are incompatible"));
+				}
+			};
 
 		
 control_block : IF '(' exp ')' BEGIN_BLOCK {pushS(stkFixElse,cat("if",getBlockID(),"","",""),""); pushS(scopeStack,cat("IF#",getBlockID(),"","",""),""); incBlockID();} commands END_BLOCK else_block //Aqui talvez precise mudar e guardar o id do if.

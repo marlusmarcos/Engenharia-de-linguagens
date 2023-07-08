@@ -566,7 +566,7 @@ void fac4(record **ss, float *s1) {
 }
 // | func_proc_call
 void fac5(record **ss, record **s1) {
-    *ss = createRecord((*s1)->code, "");
+    *ss = createRecord((*s1)->code, (*s1)->opt1);
     freeRecord(*s1);
 }
 // | '(' exp ')'
