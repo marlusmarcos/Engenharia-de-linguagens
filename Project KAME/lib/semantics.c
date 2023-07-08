@@ -55,6 +55,23 @@ void dec2(record **ss, record **s1){
 void dec3(record **ss, record **s1){
     *ss = *s1;
 };
+// | VAR id_list ':' ID				
+void dec4(record **ss, record **s2, char **s4) {
+	char *str = cat(*s4, " ", (*s2)->code, "", "");
+	*ss = createRecord(str, *s4);
+	//free(*s4);
+	freeRecord(*s2);
+	free(str);
+}
+// | VAR id_list ':' STRUCT ID				
+void dec5(record **ss, record **s2, char **s5) {
+	char *str = cat("struct ", (*s5), " ", (*s2)->code, "");
+	*ss = createRecord(str, *s5);
+	//free(*s5);
+	freeRecord(*s2);
+	free(str);
+}
+
 
 
 //id_list : ID
@@ -311,7 +328,7 @@ void comd12(record **ss, char **s3, record**s5) {
 
 //user_def : STRUCT ID BEGIN_BLOCK declaration_seq END_BLOCK		
 void u_d1(record **ss, char **s2, record **s4) {
-	char *str = cat("struct", *s2, "{\n", (*s4)->code, "}");
+	char *str = cat("struct ", *s2, "{\n", (*s4)->code, "}");
 	*ss = createRecord(str, "");
 	freeRecord(*s4);
 	//free(*s2);
@@ -319,7 +336,7 @@ void u_d1(record **ss, char **s2, record **s4) {
 }
 // | ENUM ID BEGIN_BLOCK enum_init END_BLOCK				
 void u_d2(record **ss, char **s2, record **s4) {
-	char *str = cat("enum", *s2, "{\n", (*s4)->code, "}");
+	char *str = cat("enum ", *s2, "{\n", (*s4)->code, "}");
 	*ss = createRecord(str, "");
 	freeRecord(*s4);
 	//free(*s2);

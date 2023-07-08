@@ -8,6 +8,8 @@ void dec_seq2(record **);
 void dec1(record **, record **, char **);
 void dec2(record **, record **);
 void dec3(record **, record **);
+void dec4(record **, record **, char **);
+void dec5(record **, record **, char **);
 void id_l1(record **, char **);
 void id_l2(record **, char **, record **);
 void id_l3(record **, char **, record **);

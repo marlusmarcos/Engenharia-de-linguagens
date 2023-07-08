@@ -74,7 +74,27 @@ declaration : VAR id_list ':' TYPE
 	dec1(&$$, &$2, &$4);
 }
 			| user_def								{ dec2(&$$, &$1); }
-			| type_def								{ dec3(&$$, &$1); };
+			| type_def								{ dec3(&$$, &$1); }
+			| VAR id_list ':' ID					
+				{
+					char strToSlice[100];
+					strcpy(strToSlice, $2->code);
+					char* tokenSliced = strtok(strToSlice, "[");
+
+					vatt *tmp = peekS(scopeStack);
+					insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $4);
+					dec4(&$$, &$2, &$4);
+				}
+			| VAR id_list ':' STRUCT ID					
+				{
+					char strToSlice[100];
+					strcpy(strToSlice, $2->code);
+					char* tokenSliced = strtok(strToSlice, "[");
+
+					vatt *tmp = peekS(scopeStack);
+					insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $5);
+					dec5(&$$, &$2, &$5);
+				};
 
 
 id_list : ID										{ id_l1(&$$, &$1); }
