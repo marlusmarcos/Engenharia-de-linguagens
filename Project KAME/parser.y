@@ -43,7 +43,7 @@ int countFuncCallParams;
 %token <sValue> COMMENT
 %token ENUM STRUCT VAR BREAK RETURN CONTINUE INPUT OUTPUT FUNCTION PROC WHILE FOR TYPEDEF TRUE FALSE BEGIN_BLOCK END_BLOCK IF ELSE ASSIGN MAIN_BLOCK NOT LENGTH
 
-%type <rec> main_seq command commands id_list declaration_seq subprograms declaration subprogram initialization exp term factor var
+%type <rec> main_seq command commands id_list declaration_seq subprograms declaration subprogram initialization exp term factor var new_types
 %type <rec> user_def type_def array_dim function proc paramsdef params func_proc_call assign control_block loop_block enum_init else_block varDef
 %start prog
 
@@ -62,7 +62,9 @@ declaration_seq : declaration ';' declaration_seq	{ dec_seq1(&$$, &$1, &$3); }
 				|									{ dec_seq2(&$$);};
 
 
-declaration : VAR id_list ':' TYPE					
+new_types : TYPE { $$ = createRecord($1,""); } | ID { $$ = createRecord($1,""); };
+
+declaration : VAR id_list ':' new_types					
 {
 	// Separando o id da variável dos []
 	char strToSlice[100];
@@ -73,28 +75,13 @@ declaration : VAR id_list ':' TYPE
 
 	vatt *tmp = peekS(scopeStack);
 	while( tokenSliced != NULL ) {
-		insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $4);
+		insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $4->code);
 		tokenSliced = strtok(NULL, ",");
    	}
-	dec1(&$$, &$2, &$4);
+	dec1(&$$, &$2, &$4->code);
 }
 			| user_def								{ dec2(&$$, &$1); }
 			| type_def								{ dec3(&$$, &$1); }
-			| VAR id_list ':' ID					
-				{
-					char strToSlice[100];
-					strcpy(strToSlice, $2->code);
-					char* tokenSliced = strtok(strToSlice, "[");
-					tokenSliced = strtok(tokenSliced, "*");
-					tokenSliced = strtok(tokenSliced, ",");
-
-					vatt *tmp = peekS(scopeStack);
-					while( tokenSliced != NULL ) {
-						insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $4);
-						tokenSliced = strtok(NULL, ",");
-					}
-					dec4(&$$, &$2, &$4);
-				}
 			| VAR id_list ':' STRUCT ID					
 				{
 					char strToSlice[100];
@@ -120,7 +107,7 @@ id_list : ID										{ id_l1(&$$, &$1); }
 		| STRONG_OP ID ',' id_list					{ id_l6(&$$, &$2, &$4); }
 
 
-initialization : VAR id_list ':' TYPE ASSIGN exp	
+initialization : VAR id_list ':' new_types ASSIGN exp	
 {
 	char strToSlice[100];
 	strcpy(strToSlice, $2->code);
@@ -130,18 +117,18 @@ initialization : VAR id_list ':' TYPE ASSIGN exp
 	// Adicionando novas variáveis à stack
 	vatt *tmp = peekS(scopeStack);
 	while( tokenSliced != NULL ) {
-		insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $4);
+		insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $4->code);
 		tokenSliced = strtok(NULL, ",");
    	}
 
 	// Compatibilidade de tipos
-	int intfloat = !(strcmp($4, "int") || strcmp($6->opt1, "float"));
-	int floatint = !(strcmp($4, "float") || strcmp($6->opt1, "int"));
+	int intfloat = !(strcmp($4->code, "int") || strcmp($6->opt1, "float"));
+	int floatint = !(strcmp($4->code, "float") || strcmp($6->opt1, "int"));
 
-	if((0 == strcmp($4, $6->opt1)) || intfloat || floatint){
-		init1(&$$, &$2, &$4, &$6);
+	if((0 == strcmp($4->code, $6->opt1)) || intfloat || floatint){
+		init1(&$$, &$2, &$4->code, &$6);
 	} else {
-		yyerror(cat("Inicialization of ", $4, " from type ", $6->opt1, " are incompatible!"));
+		yyerror(cat("Inicialization of ", $4->code, " from type ", $6->opt1, " are incompatible!"));
 	}
 };
 
@@ -154,9 +141,9 @@ subprogram : function								{ subprog1(&$$, &$1); }
 			| proc 									{ subprog1(&$$, &$1); };
 
 
-function : FUNCTION ID {pushS(scopeStack, $2, "");} '(' paramsdef ')' ':' TYPE BEGIN_BLOCK {insert(functionsTable,cat($2,"#r","","",""),"return",$8);} commands END_BLOCK
+function : FUNCTION ID {pushS(scopeStack, $2, "");} '(' paramsdef ')' ':' new_types BEGIN_BLOCK {insert(functionsTable,cat($2,"#r","","",""),"return",$8->code);} commands END_BLOCK
 { 
-	func1(&$$, &$2, &$5, &$8, &$11);  //Prestar atençaõ aqui, o $9 virou $11, 4->5, 7, 8;
+	func1(&$$, &$2, &$5, &$8->code, &$11);  //Prestar atençaõ aqui, o $9 virou $11, 4->5, 7, 8;
 	popS(scopeStack);
 };
 proc : PROC ID {pushS(scopeStack, $2, "");} '(' paramsdef ')' BEGIN_BLOCK {insert(functionsTable,cat($2,"#r","","",""),"r","void");} commands END_BLOCK
@@ -164,7 +151,7 @@ proc : PROC ID {pushS(scopeStack, $2, "");} '(' paramsdef ')' BEGIN_BLOCK {inser
 	proc1(&$$, &$2, &$5, &$9); //Prestar atençaõ aqui, $4->$5 o $7 virou $;
 	popS(scopeStack);
 }; 
-paramsdef : varDef ':' TYPE							
+paramsdef : varDef ':' new_types							
 {
 	char strToSlice[100];
 	strcpy(strToSlice, $1->code);
@@ -172,11 +159,11 @@ paramsdef : varDef ':' TYPE
 	tokenSliced = strtok(tokenSliced, "*");
 
 	vatt *tmp = peekS(scopeStack);
-	insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $3);
-	insertFunctionParam(tmp->subp, tokenSliced, $3);
-	pard1(&$$, &$1, &$3); 
+	insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $3->code);
+	insertFunctionParam(tmp->subp, tokenSliced, $3->code);
+	pard1(&$$, &$1, &$3->code); 
 }
-			| varDef ':' TYPE ',' paramsdef			
+			| varDef ':' new_types ',' paramsdef			
 {
 	char strToSlice[100];
 	strcpy(strToSlice, $1->code);
@@ -184,9 +171,9 @@ paramsdef : varDef ':' TYPE
 	tokenSliced = strtok(tokenSliced, "*");
 
 	vatt *tmp = peekS(scopeStack);
-	insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $3);
-	insertFunctionParam(tmp->subp, tokenSliced, $3);
-	pard2(&$$, &$1, &$3, &$5);
+	insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $3->code);
+	insertFunctionParam(tmp->subp, tokenSliced, $3->code);
+	pard2(&$$, &$1, &$3->code, &$5);
 }
 			| 										{ pard3(&$$); };
 
