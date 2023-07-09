@@ -89,7 +89,7 @@ void id_l2(record **ss, char **s1, record **s2) {
 }
 // | ID ',' id_list
 void id_l3(record **ss, char **s1, record **s3) {
-	char *str = cat(*s1, ", ", (*s3)->code, "","");
+	char *str = cat(*s1, ",", (*s3)->code, "","");
 	free(*s1);
 	freeRecord(*s3);
 	*ss = createRecord(str, "");
@@ -97,13 +97,28 @@ void id_l3(record **ss, char **s1, record **s3) {
 }
 // | ID array_dim ',' id_list
 void id_l4(record **ss, char **s1, record **s2, record **s4) {
-	char *str = cat(*s1, (*s2)->code, ", ", (*s4)->code, "");
+	char *str = cat(*s1, (*s2)->code, ",", (*s4)->code, "");
 	*ss = createRecord(str, "");
 	free(*s1);
 	freeRecord(*s2);
 	freeRecord(*s4);
 	free(str);
 };
+// | STRONG_OP ID
+void id_l5(record **ss, char **s2){
+	char *str = cat("*", *s2,"","","");
+	*ss = createRecord(str, "");
+	free(str);
+    free(*s2);
+}
+// | STRONG_OP ID ',' id_list
+void id_l6(record **ss, char **s2, record **s4) {
+	char *str = cat("*", *s2, ",", (*s4)->code, "");
+	free(*s2);
+	freeRecord(*s4);
+	*ss = createRecord(str, "");
+	free(str);
+}
 
 //initialization : VAR id_list ':' TYPE ASSIGN exp
 void init1(record **ss, record **s2, char **s4, record **s6) {

@@ -68,9 +68,14 @@ declaration : VAR id_list ':' TYPE
 	char strToSlice[100];
 	strcpy(strToSlice, $2->code);
 	char* tokenSliced = strtok(strToSlice, "[");
+	tokenSliced = strtok(tokenSliced, "*");
+	tokenSliced = strtok(tokenSliced, ",");
 
 	vatt *tmp = peekS(scopeStack);
-	insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $4);
+	while( tokenSliced != NULL ) {
+		insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $4);
+		tokenSliced = strtok(NULL, ",");
+   	}
 	dec1(&$$, &$2, &$4);
 }
 			| user_def								{ dec2(&$$, &$1); }
@@ -80,9 +85,14 @@ declaration : VAR id_list ':' TYPE
 					char strToSlice[100];
 					strcpy(strToSlice, $2->code);
 					char* tokenSliced = strtok(strToSlice, "[");
+					tokenSliced = strtok(tokenSliced, "*");
+					tokenSliced = strtok(tokenSliced, ",");
 
 					vatt *tmp = peekS(scopeStack);
-					insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $4);
+					while( tokenSliced != NULL ) {
+						insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $4);
+						tokenSliced = strtok(NULL, ",");
+					}
 					dec4(&$$, &$2, &$4);
 				}
 			| VAR id_list ':' STRUCT ID					
@@ -90,9 +100,14 @@ declaration : VAR id_list ':' TYPE
 					char strToSlice[100];
 					strcpy(strToSlice, $2->code);
 					char* tokenSliced = strtok(strToSlice, "[");
+					tokenSliced = strtok(tokenSliced, "*");
+					tokenSliced = strtok(tokenSliced, ",");
 
 					vatt *tmp = peekS(scopeStack);
-					insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $5);
+					while( tokenSliced != NULL ) {
+						insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $5);
+						tokenSliced = strtok(NULL, ",");
+					}
 					dec5(&$$, &$2, &$5);
 				};
 
@@ -101,13 +116,25 @@ id_list : ID										{ id_l1(&$$, &$1); }
 		| ID array_dim								{ id_l2(&$$, &$1, &$2); }
 		| ID ',' id_list							{ id_l3(&$$, &$1, &$3); }
 		| ID array_dim ',' id_list					{ id_l4(&$$, &$1, &$2, &$4); }
+		| STRONG_OP ID								{ id_l5(&$$, &$2); }
+		| STRONG_OP ID ',' id_list					{ id_l6(&$$, &$2, &$4); }
 
 
 initialization : VAR id_list ':' TYPE ASSIGN exp	
 {
-	vatt *tmp = peekS(scopeStack);
-	insert(variablesTable, cat(tmp->subp, "#", $2->code,"",""), $2->code, $4);
+	char strToSlice[100];
+	strcpy(strToSlice, $2->code);
+	char* tokenSliced = strtok(strToSlice, "[");
+	tokenSliced = strtok(tokenSliced, ",");
 
+	// Adicionando novas variáveis à stack
+	vatt *tmp = peekS(scopeStack);
+	while( tokenSliced != NULL ) {
+		insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $4);
+		tokenSliced = strtok(NULL, ",");
+   	}
+
+	// Compatibilidade de tipos
 	int intfloat = !(strcmp($4, "int") || strcmp($6->opt1, "float"));
 	int floatint = !(strcmp($4, "float") || strcmp($6->opt1, "int"));
 
@@ -142,6 +169,7 @@ paramsdef : varDef ':' TYPE
 	char strToSlice[100];
 	strcpy(strToSlice, $1->code);
 	char* tokenSliced = strtok(strToSlice, "[");
+	tokenSliced = strtok(tokenSliced, "*");
 
 	vatt *tmp = peekS(scopeStack);
 	insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $3);
@@ -153,6 +181,7 @@ paramsdef : varDef ':' TYPE
 	char strToSlice[100];
 	strcpy(strToSlice, $1->code);
 	char* tokenSliced = strtok(strToSlice, "[");
+	tokenSliced = strtok(tokenSliced, "*");
 
 	vatt *tmp = peekS(scopeStack);
 	insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $3);

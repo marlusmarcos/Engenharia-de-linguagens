@@ -27,8 +27,8 @@ main() {
 		intervalo76a100++;
 	};		
 };
-	output("%d\n",intervalo0a25);	
-	output("%d\n",intervalo26a50);	
-	output("%d\n",intervalo51a75);	
-	output("%d\n",intervalo76a100);	
+	output("Intervalo 0 a 25 %d\n",intervalo0a25);	
+	output("Intervalo 26 a 50 %d\n",intervalo26a50);	
+	output("Intervalo 51 a 75 %d\n",intervalo51a75);	
+	output("Intervalo 76 a 100 %d\n",intervalo76a100);	
 };

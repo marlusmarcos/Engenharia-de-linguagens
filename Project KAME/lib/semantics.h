@@ -14,6 +14,8 @@ void id_l1(record **, char **);
 void id_l2(record **, char **, record **);
 void id_l3(record **, char **, record **);
 void id_l4(record **, char **, record **, record **);
+void id_l5(record **, char **);
+void id_l6(record **, char **, record **);
 void init1(record **, record **, char **, record **);
 void subprogs1(record **, record **, record **);
 void subprogs2(record **);
