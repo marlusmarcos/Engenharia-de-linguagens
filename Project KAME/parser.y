@@ -16,6 +16,7 @@ extern FILE * yyin, * yyout;
 
 SymbolTable *variablesTable;
 SymbolTable *functionsTable;
+SymbolTable *typedTable;
 stack *scopeStack;
 stack *stkFixElse;
 void insertFunctionParam(char *, char *, char *);
@@ -62,7 +63,14 @@ declaration_seq : declaration ';' declaration_seq	{ dec_seq1(&$$, &$1, &$3); }
 				|									{ dec_seq2(&$$);};
 
 
-new_types : TYPE { $$ = createRecord($1,""); } | ID { $$ = createRecord($1,""); };
+new_types : TYPE { $$ = createRecord($1,""); } 
+			| ID 
+				{
+					if(lookup(typedTable, $1) == NULL){
+						yyerror(cat("unknow type ",$1,"","",""));
+					} 
+					$$ = createRecord($1,""); 
+				};
 
 declaration : VAR id_list ':' new_types					
 {
@@ -266,13 +274,13 @@ command : declaration				{ comd1(&$$, &$1); }
 		| OUTPUT '(' STR_LITERAL ',' exp ')'		{ comd12(&$$, &$3, &$5); };
 
 
-user_def : STRUCT ID BEGIN_BLOCK declaration_seq END_BLOCK		{ u_d1(&$$, &$2, &$4); }
+user_def : STRUCT ID {insert(typedTable,cat("struct ",$2,"","",""),$2,"struct");}	BEGIN_BLOCK declaration_seq END_BLOCK		{ u_d1(&$$, &$2, &$5); }
 		| ENUM ID BEGIN_BLOCK enum_init END_BLOCK				{ u_d2(&$$, &$2, &$4); };
 enum_init :	ID													{ enum_i1(&$$, &$1); }
 			| ID ',' enum_init									{ enum_i2(&$$, &$1, &$3); }
 			| ID ASSIGN NUMBER									{ enum_i3(&$$, &$1, &$3); }
 			| ID ASSIGN NUMBER ',' enum_init					{ enum_i4(&$$, &$1, &$3, &$5); };
-type_def : TYPEDEF ID ASSIGN user_def							{ ty_d1(&$$, &$2, &$4); };
+type_def : TYPEDEF ID {insert(typedTable,$2,$2,"newtype");} ASSIGN user_def		{ ty_d1(&$$, &$2, &$5); };
 
 assign : OPC ID							{ asg1(&$$, &$1, &$2); }
 		| ID OPC						{ asg2(&$$, &$1, &$2); }
@@ -518,6 +526,7 @@ int main (int argc, char ** argv) {
 
 	variablesTable = createSymbolTable(TABLE_SIZE);
 	functionsTable = createSymbolTable(TABLE_SIZE);
+	typedTable = createSymbolTable(TABLE_SIZE);
 	scopeStack = newStack();
 	stkFixElse = newStack();
 	countFuncCallParams = 0;

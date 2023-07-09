@@ -62,6 +62,7 @@ main(){
 		};
 		output("%s", "\n");
 	};
+	output("%s", "\n");
 
 	for (var numLinhasMatrizMultiplicacao :int = 0; numLinhasMatrizMultiplicacao < numLinhasMatriz1; numLinhasMatrizMultiplicacao++){
 		for(var numColunasMatrizMultiplicacao :int = 0; numColunasMatrizMultiplicacao < numColunasMatriz2; numColunasMatrizMultiplicacao++){
