@@ -10,9 +10,9 @@
 %%
 
 [ \t\n]                       	;
-[0-9]+							{yylval.iValue = atoi(yytext);
+-?[0-9]+							{yylval.iValue = atoi(yytext);
 									return NUMBER;}
-([0-9]+\.[0-9]*)|(\.[0-9]+)		{yylval.fValue = atof(yytext);
+(-?[0-9]+\.[0-9]*)|(\.[0-9]+)		{yylval.fValue = atof(yytext);
 									return REAL;}
 
 "int"					{yylval.sValue = strdup(yytext);
@@ -110,6 +110,7 @@
 								return STR_LITERAL;}
 [a-zA-Z][a-zA-Z0-9]*		{yylval.sValue = strdup(yytext); 
                       			return ID;}
+[\t\r\n] ;
 .                     		{yyerror("invalid character");}
 
 %%

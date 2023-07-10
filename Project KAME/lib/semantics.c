@@ -338,6 +338,14 @@ void comd12(record **ss, char **s3, record**s5) {
 	free(*s3);
 	freeRecord(*s5);
 	free(str);
+}
+
+// | OUTPUT	'(' STR_LITERAL ')'	
+void comd13(record **ss, char **s3) {
+	char *str = cat("printf(", *s3, ")", "", "");
+	*ss = createRecord(str, "");
+	free(*s3);
+	free(str);
 };
 
 

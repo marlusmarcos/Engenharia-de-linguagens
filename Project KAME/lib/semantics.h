@@ -44,6 +44,7 @@ void comd9(record **, record **);
 void comd10(record **);
 void comd11(record **, char **, record **);	
 void comd12(record **, char **, record **);
+void comd13(record **, char **);
 	
 void u_d1(record **, char **, record **);
 void u_d2(record **, char **, record **);

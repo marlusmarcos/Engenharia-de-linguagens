@@ -271,8 +271,8 @@ command : declaration				{ comd1(&$$, &$1); }
 			}
 		| CONTINUE					{ comd10(&$$); }
 		| INPUT	'(' STR_LITERAL ',' exp ')'			{ comd11(&$$, &$3, &$5); }
-		| OUTPUT '(' STR_LITERAL ',' exp ')'		{ comd12(&$$, &$3, &$5); };
-
+		| OUTPUT '(' STR_LITERAL ',' exp ')'		{ comd12(&$$, &$3, &$5); }
+		| OUTPUT '(' STR_LITERAL ')'                { comd13(&$$, &$3); };
 
 user_def : STRUCT ID {insert(typedTable,cat("struct ",$2,"","",""),$2,"struct");}	BEGIN_BLOCK declaration_seq END_BLOCK		{ u_d1(&$$, &$2, &$5); }
 		| ENUM ID BEGIN_BLOCK enum_init END_BLOCK				{ u_d2(&$$, &$2, &$4); };
