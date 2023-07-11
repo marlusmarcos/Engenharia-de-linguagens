@@ -8,4 +8,27 @@ main(){
     
     var teste2, a, b, c, d : float = 2;
 
+    var countA :int = 1;
+    var countB :int = 1;
+
+    while(countA){
+        var a :int = 0;
+        while(countB){
+            var a : int = 100;
+            output("while B %d\n", a);
+            countB = 0; 
+        };
+        output("while A %d\n", a);
+        countA = 0;
+    };
+
+    if(1){
+        var a :int = 0;
+        if(1){
+            var a : int = 100;
+            output("if B %d\n", a); 
+        };
+        output("if A %d\n", a);
+    };
+
 };

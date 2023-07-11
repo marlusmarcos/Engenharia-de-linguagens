@@ -101,6 +101,10 @@
 								return WEAK_OP;}
 "!=" 					   	{yylval.sValue = strdup(yytext);
 								return WEAK_OP;}
+"->" 					   	{yylval.sValue = strdup(yytext);
+								return ARROW;}
+"NULL" 					   	{yylval.sValue = strdup(yytext);
+								return NULL_T;}
 
 (\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)		;
 

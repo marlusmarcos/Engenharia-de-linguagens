@@ -42,6 +42,8 @@ int countFuncCallParams;
 %token <sValue> WEAK_OP
 %token <sValue> STRONG_OP
 %token <sValue> COMMENT
+%token <sValue> NULL_T
+%token <sValue> ARROW
 %token ENUM STRUCT VAR BREAK RETURN CONTINUE INPUT OUTPUT FUNCTION PROC WHILE FOR TYPEDEF TRUE FALSE BEGIN_BLOCK END_BLOCK IF ELSE ASSIGN MAIN_BLOCK NOT LENGTH
 
 %type <rec> main_seq command commands id_list declaration_seq subprograms declaration subprogram initialization exp term factor var new_types
@@ -71,6 +73,13 @@ new_types : TYPE { $$ = createRecord($1,""); }
 					} 
 					$$ = createRecord($1,""); 
 				};
+			| STRUCT ID 
+				{
+					if(lookup(typedTable, cat("struct ",$2,"","","")) == NULL){
+						yyerror(cat("unknow type struct",$2,"","",""));
+					} 
+					$$ = createRecord(cat("struct ",$2,"","",""),""); 
+				}
 
 declaration : VAR id_list ':' new_types					
 {
@@ -83,6 +92,9 @@ declaration : VAR id_list ':' new_types
 
 	vatt *tmp = peekS(scopeStack);
 	while( tokenSliced != NULL ) {
+		if(lookup(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""))){
+			yyerror(cat("error: redeclaration  of variable ",tokenSliced,"","",""));
+		}
 		insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $4->code);
 		tokenSliced = strtok(NULL, ",");
    	}
@@ -90,21 +102,6 @@ declaration : VAR id_list ':' new_types
 }
 			| user_def								{ dec2(&$$, &$1); }
 			| type_def								{ dec3(&$$, &$1); }
-			| VAR id_list ':' STRUCT ID					
-				{
-					char strToSlice[100];
-					strcpy(strToSlice, $2->code);
-					char* tokenSliced = strtok(strToSlice, "[");
-					tokenSliced = strtok(tokenSliced, "*");
-					tokenSliced = strtok(tokenSliced, ",");
-
-					vatt *tmp = peekS(scopeStack);
-					while( tokenSliced != NULL ) {
-						insert(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""), tokenSliced, $5);
-						tokenSliced = strtok(NULL, ",");
-					}
-					dec5(&$$, &$2, &$5);
-				};
 
 
 id_list : ID										{ id_l1(&$$, &$1); }
@@ -125,6 +122,9 @@ initialization : VAR id_list ':' new_types ASSIGN exp
 	// Adicionando novas variáveis à stack
 	vatt *tmp = peekS(scopeStack);
 	while( tokenSliced != NULL ) {
+		if(lookup(variablesTable, cat(tmp->subp,"#",tokenSliced,"",""))){
+			yyerror(cat("error: redeclaration  of variable ",tokenSliced,"","",""));
+		}
 		insert(variablesTable, cat(tmp->subp, "#", tokenSliced,"",""), tokenSliced, $4->code);
 		tokenSliced = strtok(NULL, ",");
    	}
@@ -396,6 +396,7 @@ factor : var							{ fac1(&$$, &$1); }
 		| FALSE							{ fac9(&$$); }
 		| NOT factor					{ fac10(&$$, &$2); }
 		| LENGTH '(' factor ')'			{ fac11(&$$, &$3); };
+		| NULL_T						{ $$ = createRecord($1,"null"); }
 
 var : ID								
 		{
@@ -463,7 +464,7 @@ var : ID
 
 			v3(&$$, &$1, &$3);
 		};
-	| ID '-''>' var					
+	| ID ARROW var					
 		{
 			int stop = 0;
 			int top = scopeStack->top;
@@ -481,14 +482,14 @@ var : ID
 					}
 				}
 			};
-			v4(&$$, &$1, &$4); 
+			v4(&$$, &$1, &$3); 
 		}
 	| STRONG_OP var						{ v5(&$$, &$2); }
 	| '&' var						{ v6(&$$, &$2); };
 varDef : ID								{ vd1(&$$, &$1); }
 	| ID array_dim						{ vd2(&$$, &$1, &$2); }
 	| ID '.' varDef						{ vd3(&$$, &$1, &$3); }
-	| ID '-''>' varDef					{ vd4(&$$, &$1, &$4); }
+	| ID ARROW varDef					{ vd4(&$$, &$1, &$3); }
 	| STRONG_OP varDef					{ vd5(&$$, &$2); }
 	| '&' varDef						{ vd6(&$$, &$2); };
 array_dim : '[' ']'						{ arrd1(&$$); }
