@@ -1,0 +1,84 @@
+main(){
+	var numColunasMatriz1,numLinhasMatriz1,numColunasMatriz2, numLinhasMatriz2 :int;
+
+	output("Digite o numero de linhas da martriz um \n");
+	input("%d",&numLinhasMatriz1);
+	output("Digite o numero de colunas da martriz um \n");
+	input("%d",&numColunasMatriz1);
+	
+	output("Digite o numero de linhas da martriz dois \n");
+	input("%d",&numLinhasMatriz2);
+	output("Digite o numero de colunas da martriz dois \n");
+	input("%d",&numColunasMatriz2);
+
+    var matriz1[numLinhasMatriz1][numColunasMatriz1] :int;
+	var matriz2[numLinhasMatriz2][numColunasMatriz2] : int;
+
+    for (var ii :int = 0; ii < numLinhasMatriz1; ii++){
+        for(var jj :int = 0; jj < numColunasMatriz1; jj++){
+            output("Digite o valor da elemento ");
+            output("%d ", ii);
+            output("%d da matriz um ", jj);
+            input("%d", &matriz1[ii][jj]);
+        };
+    };
+
+    for (var ii :int = 0; ii < numLinhasMatriz2; ii++){
+        for(var jj :int = 0; jj < numColunasMatriz2; jj++){
+            output("Digite o valor da elemento ");
+            output("%d ", ii);
+            output("%d da matriz dois ", jj);
+            input("%d", &matriz2[ii][jj]);
+        };
+    };
+
+	if ((numColunasMatriz1 != numColunasMatriz2 && numLinhasMatriz1 != numLinhasMatriz2) 
+		|| numColunasMatriz1 != numLinhasMatriz2){
+		output("%s", "Nao eh possivel somar com essas duas matrizes \n");
+	} else {
+		var matrizSoma[numLinhasMatriz1][numColunasMatriz1]:int;
+
+		for (var i :int = 0; i < numLinhasMatriz1; i++){
+			for (var j :int= 0; j < numColunasMatriz1; j++){
+				matrizSoma[i][j] = matriz1[i][j] + matriz2[i][j];
+			};
+		};
+
+        for (var numLinhasMatrizSoma :int = 0; numLinhasMatrizSoma < numLinhasMatriz1; numLinhasMatrizSoma++){
+            for(var numColunasMatrizSoma :int = 0; numColunasMatrizSoma < numColunasMatriz1; numColunasMatrizSoma++){
+                output("%d ", matrizSoma[numLinhasMatrizSoma][numColunasMatrizSoma]);
+            };
+            output("%s", "\n");
+        };
+        output("%s", "\n");
+
+	};
+
+	if (numLinhasMatriz1 != numColunasMatriz2){
+		output("%s", "Nao eh possivel multiplicar com essas duas matrizes \n");
+	} else {
+		var matrizMultiplicacao[numLinhasMatriz1][numColunasMatriz2]:int;
+
+		for (var k :int= 0; k < numLinhasMatriz1; k++){
+		var aux : int = 0;
+			for (var g :int = 0; g < numColunasMatriz2; g++){
+				matrizMultiplicacao[k][g] = 0;
+				for (var h :int = 0; h < numLinhasMatriz2 ; h++){
+					aux += matriz1[k][h] * matriz2[h][g];
+				};
+				matrizMultiplicacao[k][g] = aux;
+				aux = 0;
+			};
+			
+		};
+
+		for (var numLinhasMatrizMultiplicacao :int = 0; numLinhasMatrizMultiplicacao < numLinhasMatriz1; numLinhasMatrizMultiplicacao++){
+			for(var numColunasMatrizMultiplicacao :int = 0; numColunasMatrizMultiplicacao < numColunasMatriz2; numColunasMatrizMultiplicacao++){
+				output("%d ", matrizMultiplicacao[numLinhasMatrizMultiplicacao][numColunasMatrizMultiplicacao]);
+			};
+			output("%s", "\n");
+		};
+
+	};
+
+};
