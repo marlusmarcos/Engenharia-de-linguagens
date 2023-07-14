@@ -1,0 +1,30 @@
+function MDC(n : int , m : int, * resultado : int) : void {
+	if (n == 0) {
+		*resultado = m;
+		return;
+	};
+	if (0 == n % m) {
+		*resultado = m;
+		return;
+	};
+	if (0 == m % n) {
+		*resultado = n;
+	}
+	else {
+		if(m > n){
+			var resto:int;
+			resto = m % n;
+			MDC(n,resto, resultado);
+		};
+	};
+};
+main() {
+	var n, m :int = 0;
+    var res :int;
+
+    input("%d", &n);
+    input("%d", &m);
+    MDC(n, m, &res);
+
+    output("O MDC eh %d\n", res);
+};

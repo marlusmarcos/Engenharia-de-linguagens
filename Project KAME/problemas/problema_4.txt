@@ -1,0 +1,106 @@
+typedef racional = struct numeroRacional {
+    var numerador : int;
+    var denominador : int;
+};
+
+/* Aqui é necessario fazer uma checagem em relação ao zero. */
+function criarRacional(numerador : int, denominador : int) : racional {
+    var numeroRacional : racional;
+    numeroRacional.numerador = numerador;
+    numeroRacional.denominador = denominador;
+    return numeroRacional;
+};
+
+function compararRacionais(r1 : racional, r2 : racional) : boolean {
+    var iguais : boolean = false;
+
+    if((r1.numerador * r2.denominador) == (r2.numerador * r1.denominador)) {
+        iguais = true;
+    };
+
+    return iguais;
+};
+
+function somarRacionais(r1 : racional, r2 : racional) : racional {
+    var numerador : int = (r1.numerador * r2.denominador) + (r2.numerador * r1.denominador);
+    var denominador : int = r1.denominador * r2.denominador;
+
+    return criarRacional(numerador, denominador);
+};
+
+function subtrairRacionais(r1 : racional, r2 : racional) : racional {
+    var numerador : int = (r1.numerador * r2.denominador) - (r2.numerador * r1.denominador);
+    var denominador : int = r1.denominador * r2.denominador;
+
+    return criarRacional(numerador, denominador);
+};
+
+function multiplicarRacionais(r1 : racional, r2 : racional) : racional {
+    var numerador : int = r1.numerador * r2.numerador;
+    var denominador : int = r1.denominador * r2.denominador;
+    
+    return criarRacional(numerador, denominador);
+};
+
+function negarRacional(r : racional) : racional {
+    var numerador : int = r.numerador * -1; 
+    var denominador : int = r.denominador * -1;
+    
+    return criarRacional(numerador, denominador);
+};
+
+function inversoRacional(r : racional) : racional {
+    var numerador : int = r.denominador;
+    var denominador : int = r.numerador;
+    return criarRacional(numerador, denominador);
+};
+
+function divisaoRacional(r1 : racional, r2 : racional) : racional {
+    return multiplicarRacionais(r1, inversoRacional(r2));
+};
+
+
+main() {
+    var r1 : racional = criarRacional(2, 3);
+    var r2 : racional = criarRacional(4, 6);
+
+    output("Numero racional1 %d ",r1.numerador);
+    output(" %d\n", r1.denominador);
+    
+    output("Numero racional2 %d ",r2.numerador);
+    output(" %d\n", r2.denominador);
+
+    var iguais : boolean = compararRacionais(r1, r2);
+
+    if(iguais == true) {
+        output("Numeros racionais sao iguais\n");
+    } else {
+        output("Numeros racionais sao diferentes\n");
+    };
+
+    var soma : racional = somarRacionais(r1, r2);
+    
+    output("A soma dos racionais eh %d ",soma.numerador);
+    output(" %d\n", soma.denominador);
+
+    var negacao : racional = negarRacional(r1);
+
+    output("racional1 negado %d ",negacao.numerador);
+    output(" %d\n", negacao.denominador);
+
+    var diferenca : racional = subtrairRacionais(r1, r2);
+    output("A diferenca entre os racionais eh %d ",diferenca.numerador);
+    output(" %d\n", diferenca.denominador);
+
+    var multiplicacao : racional = multiplicarRacionais(r1, r2);
+    output("A multiplicacao entre os racionais eh %d ",multiplicacao.numerador);
+    output(" %d\n", multiplicacao.denominador);
+
+    var inverso : racional = inversoRacional(r1);
+    output("O inverso do racional1 eh %d ",inverso.numerador);
+    output(" %d\n", inverso.denominador);
+
+    var divisao : racional = divisaoRacional(r1, r2);
+    output("A divisao entre os racionais eh %d ",divisao.numerador);
+    output(" %d\n", divisao.denominador);
+};

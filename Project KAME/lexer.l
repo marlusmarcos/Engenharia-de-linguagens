@@ -10,9 +10,9 @@
 %%
 
 [ \t\n]                       	;
-[0-9]+							{yylval.iValue = atoi(yytext);
+-?[0-9]+							{yylval.iValue = atoi(yytext);
 									return NUMBER;}
-([0-9]+\.[0-9]*)|(\.[0-9]+)		{yylval.fValue = atof(yytext);
+(-?[0-9]+\.[0-9]*)|(\.[0-9]+)		{yylval.fValue = atof(yytext);
 									return REAL;}
 
 "int"					{yylval.sValue = strdup(yytext);
@@ -54,17 +54,18 @@
 ";"                   	{return(yytext[0]);}
 ","                   	{return(yytext[0]);}
 "."                   	{return(yytext[0]);}
+"&"                   	{return(yytext[0]);}
 "="                   	{return(ASSIGN);}
 "["						{return(yytext[0]);}
 "]"                 	{return(yytext[0]);}
 "("						{return(yytext[0]);}
 ")"                 	{return(yytext[0]);}
 
-"or"						{yylval.sValue = strdup(yytext);
+"||"						{yylval.sValue = strdup(yytext);
 								return WEAK_OP;}
-"and" 					   	{yylval.sValue = strdup(yytext);
+"&&" 					   	{yylval.sValue = strdup(yytext);
 								return WEAK_OP;}
-"not" 						{return(NOT);}
+"!" 						{return(NOT);}
 "++" 					   	{yylval.sValue = strdup(yytext);
 								return OPC;}
 "--" 					    {yylval.sValue = strdup(yytext);
@@ -100,15 +101,20 @@
 								return WEAK_OP;}
 "!=" 					   	{yylval.sValue = strdup(yytext);
 								return WEAK_OP;}
+"->" 					   	{yylval.sValue = strdup(yytext);
+								return ARROW;}
+"NULL" 					   	{yylval.sValue = strdup(yytext);
+								return NULL_T;}
 
 (\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)		;
 
-(\"[a-zA-Z0-9_ ]*\")	  		{yylval.sValue = strdup(yytext);
+(\"[a-zA-Z0-9\%_ \n\\]*\")	  		{yylval.sValue = strdup(yytext);
 								return STR_LITERAL;}
-(\'[a-zA-Z0-9_ ]*\')	  		{yylval.sValue = strdup(yytext);
+(\'[a-zA-Z0-9\%_ \n\\]*\')	  		{yylval.sValue = strdup(yytext);
 								return STR_LITERAL;}
 [a-zA-Z][a-zA-Z0-9]*		{yylval.sValue = strdup(yytext); 
                       			return ID;}
+[\t\r\n] ;
 .                     		{yyerror("invalid character");}
 
 %%

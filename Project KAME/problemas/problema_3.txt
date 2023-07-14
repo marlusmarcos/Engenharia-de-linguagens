@@ -1,0 +1,73 @@
+main(){
+	var numColunasMatriz1 :int; var numLinhasMatriz1 :int; var numColunasMatriz2 :int; var numLinhasMatriz2 :int;
+	numColunasMatriz1 = 3;
+	numColunasMatriz2 = 3;
+	numLinhasMatriz1 = 3;
+	numLinhasMatriz2 = 3;
+
+	var matriz1[numLinhasMatriz1][numColunasMatriz1] :int;
+	var matriz2[numLinhasMatriz2][numColunasMatriz2] : int;
+
+	/*var numColunasMatriz1 :int;
+	var numLinhasMatriz1 :int;
+	var numColunasMatriz2 :int;
+	var numLinhasMatriz2 :int;*/
+
+		/*input("%d",&numColunasMatriz1);
+		input("%d",&numLinhasMatriz1);
+		input("%d",&numColunasMatriz2);
+		input("%d",&numLinhasMatriz2);*/
+
+	/*if ((numColunasMatriz1 != numColunasMatriz2 && numLinhasMatriz1 != numLinhasMatriz2) 
+		|| numColunasMatriz1 != numLinhasMatriz2){
+		output("%s", "Nao eh possivel operar com essas duas matrizes \n");
+	};*/
+
+	var matrizSoma[numLinhasMatriz1][numColunasMatriz1]:int;
+	var matrizMultiplicacao[numLinhasMatriz1][numColunasMatriz2]:int;
+
+	matriz1[0][0] = 1; matriz1[0][1] = 2; matriz1[0][2] = 3;
+	matriz1[1][0] = 4; matriz1[1][1] = 5; matriz1[1][2] = 6;
+	matriz1[2][0] = 7; matriz1[2][1] = 8; matriz1[2][2] = 9;
+
+	matriz2[0][0] = 9; matriz2[0][1] = 8; matriz2[0][2] = 7;
+	matriz2[1][0] = 6; matriz2[1][1] = 5; matriz2[1][2] = 4;
+	matriz2[2][0] = 3; matriz2[2][1] = 2; matriz2[2][2] = 1;
+	
+
+	for (var i :int = 0; i < numLinhasMatriz1; i++){
+		for (var j :int= 0; j < numColunasMatriz1; j++)
+		{
+			matrizSoma[i][j] = matriz1[i][j] + matriz2[i][j];
+		};
+	};
+
+	for (var k :int= 0; k < numLinhasMatriz1; k++){
+		var aux : int = 0;
+		for (var g :int = 0; g < numColunasMatriz2; g++){
+			matrizMultiplicacao[k][g] = 0;
+			for (var h :int = 0; h < numLinhasMatriz2 ; h++){
+				aux += matriz1[k][h] * matriz2[h][g];
+			};
+			matrizMultiplicacao[k][g] = aux;
+			aux = 0;
+		};
+		
+	};
+
+	for (var numLinhasMatrizSoma :int = 0; numLinhasMatrizSoma < numLinhasMatriz1; numLinhasMatrizSoma++){
+		for(var numColunasMatrizSoma :int = 0; numColunasMatrizSoma < numColunasMatriz1; numColunasMatrizSoma++)
+		{
+			output("%d ", matrizSoma[numLinhasMatrizSoma][numColunasMatrizSoma]);
+		};
+		output("%s", "\n");
+	};
+	output("%s", "\n");
+
+	for (var numLinhasMatrizMultiplicacao :int = 0; numLinhasMatrizMultiplicacao < numLinhasMatriz1; numLinhasMatrizMultiplicacao++){
+		for(var numColunasMatrizMultiplicacao :int = 0; numColunasMatrizMultiplicacao < numColunasMatriz2; numColunasMatrizMultiplicacao++){
+			output("%d ", matrizMultiplicacao[numLinhasMatrizMultiplicacao][numColunasMatrizMultiplicacao]);
+		};
+		output("%s", "\n");
+	};
+};

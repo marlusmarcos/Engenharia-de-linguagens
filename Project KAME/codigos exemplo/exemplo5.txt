@@ -1,0 +1,19 @@
+
+typedef stu = struct students {
+    var name :string;
+    var branch :string;
+    var IDno :int;
+};
+
+main()
+{
+    var st :stu;
+    st.name = "Kamlesh Joshi";
+    st.branch = "Computer Science And Engineering";
+    st.IDno = 108;
+ 
+    output("Name %s\n", st.name);
+    output("Branch %s\n", st.branch);
+    output("ID_no %d\n", st.IDno);
+
+};

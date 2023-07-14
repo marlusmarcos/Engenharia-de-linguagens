@@ -1,5 +1,5 @@
-#ifndef TRADUCAO_AUX
-#define TRADUCAO_AUX
+#ifndef SYMBOL_TABLE
+#define SYMBOL_TABLE
 
 #define TABLE_SIZE 109
 
